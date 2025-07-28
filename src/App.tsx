@@ -24,8 +24,23 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
-
+  
+export function LinkAsButton() {
+  return (
+    <Button asChild>
+      <a href="https://refs.clevelandcenter.org" className="text-blue-500 hover:underline">Refs</a>
+    </Button>
+  )
+}
 
 
 export function InputWithLabel() {
@@ -112,7 +127,19 @@ function App() {
         <Button>Click me</Button>
         <InputWithLabel />
         <br></br>
-
+        <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your account
+              and remove your data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog><br></br>
+      <LinkAsButton />
       </div>
       </ThemeProvider>
     </div>
