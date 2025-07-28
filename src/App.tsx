@@ -10,11 +10,7 @@ import {
   NavigationMenuTrigger,
   //NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+
 import { ThemeProvider } from "@/components/theme-provider"
 import {
   DropdownMenu,
@@ -24,14 +20,54 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
+
+import { Progress } from "@/components/ui/progress"
+
+import React, { useState } from "react"
+
+
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+
+import { Textarea } from "@/components/ui/textarea"
+
+
+
+export function ResizableDemo() {
+  return (
+
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="w-[70%] rounded-lg border"
+      >
+      <ResizablePanel defaultSize={1000}>
+        <div className="flex h-[400px] items-center justify-center p-12">
+          <span className="font-semibold">One</span>
+          <Textarea />
+        </div>
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel defaultSize={1000}>
+        <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize={500}>
+            <div className="flex h-full items-center justify-center p-12">
+              <span className="font-semibold">Two</span>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={1500}>
+            <div className="flex h-full items-center justify-center p-12">
+              <span className="font-semibold">Three</span>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  )
+}
 
   
 export function LinkAsButton() {
@@ -43,14 +79,51 @@ export function LinkAsButton() {
 }
 
 
-export function InputWithLabel() {
+export function DepartureInput({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
   return (
     <div className="grid w-full max-w-sm items-center gap-3 mt-6">
-      <Label htmlFor="email">Email</Label>
-      <Input type="email" id="email" placeholder="Email" />
-
+      <Label htmlFor="departure">Departure</Label>
+      <Input type="text" id="departure" placeholder="DTW" value={value} onChange={onChange} />
     </div>
   )
+}
+
+export function ArrivalInput({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return (
+    <div className="grid w-full max-w-sm items-center gap-3 mt-6">
+      <Label htmlFor="arrival">Destination</Label>
+      <Input type="text" id="destination" placeholder="JFK" value={value} onChange={onChange} />
+    </div>
+  )
+}
+
+export function FlightInputs({
+  departure,
+  setDeparture,
+  arrival,
+  setArrival,
+}: {
+  departure: string
+  setDeparture: (e: React.ChangeEvent<HTMLInputElement>) => void
+  arrival: string
+  setArrival: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
+  return (
+    <div className="flex gap-4 max-w-md">
+      <DepartureInput value={departure} onChange={setDeparture} />
+      <ArrivalInput value={arrival} onChange={setArrival} />
+    </div>
+  )
+}
+
+
+export function ProgressDemo() {
+  const [progress, setProgress] = React.useState(13)
+  React.useEffect(() => {
+    const timer = setTimeout(() => setProgress(66), 500)
+    return () => clearTimeout(timer)
+  }, [])
+  return <Progress value={progress} className="w-[60%]" />
 }
 
 export function ModeToggle() {
@@ -80,69 +153,86 @@ export function ModeToggle() {
   )
 }
 
+
 function App() {
+  const [destination, setDestination] = useState("")
+  const [crossings, setCrossings] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchCrossings = async () => {
+    setLoading(true)
+    setError(null)
+    setCrossings([])
+
+    try {
+      const response = await fetch(`https://ids.alphagolfcharlie.dev/api/crossings?destination=${destination}`)
+      if (!response.ok) throw new Error("Failed to fetch crossings")
+      const data = await response.json()
+      setCrossings(data)
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-
-    <div className="min-h-screen flex flex-col">
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      {/* Top nav */}
-      <div className="p-4 border-b flex items-center justify-between">
-      {/* Left side: Navigation Menu */}
-      <NavigationMenu viewport={false}>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>Link</NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Item Two</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>Link Two</NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Item Three</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink>Link Three</NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+      <div className="min-h-screen flex flex-col">
+        {/* Top Navigation */}
+        <div className="p-4 border-b flex items-center justify-between">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="/">Home</NavigationMenuLink>
+                  <NavigationMenuLink href="/about">About</NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          <ModeToggle />
+        </div>
 
-      {/* Right side: Mode Toggle */}
-      <ModeToggle />
-    </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-start p-10 gap-6">
+          <div className="w-full max-w-sm">
+            <Label htmlFor="destination">Destination</Label>
+            <Input
+              id="destination"
+              type="text"
+              placeholder="e.g. JFK"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value.toUpperCase())}
+              className="mt-2"
+            />
+            <Button onClick={fetchCrossings} className="mt-4 w-full" disabled={loading || !destination}>
+              {loading ? "Loading..." : "Get Crossings"}
+            </Button>
+          </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
-        <Tooltip>
-          <TooltipTrigger>Hover</TooltipTrigger>
-          <TooltipContent>
-          <p>Add to library</p>
-          </TooltipContent>
-        </Tooltip>
-        <br></br>
-        <Button>Click me</Button>
-        <InputWithLabel />
-        <br></br>
-        <Dialog>
-        <DialogTrigger>Open</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your account
-              and remove your data from our servers.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog><br></br>
-      <LinkAsButton />
+          {error && <p className="text-red-500">{error}</p>}
+
+          {crossings.length > 0 && (
+            <div className="w-full max-w-2xl border rounded p-4 bg-background">
+              <h2 className="text-lg font-semibold mb-4">Crossings for {destination}</h2>
+              <ul className="space-y-4">
+                {crossings.map((crossing, index) => (
+                  <li key={index} className="border-b pb-2">
+                    <p><strong>Fix:</strong> {crossing.fix}</p>
+                    <p><strong>Restriction:</strong> {crossing.restriction}</p>
+                    <p><strong>Notes:</strong> {crossing.notes || "N/A"}</p>
+                    <p><strong>ARTCC:</strong> {crossing.artcc}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
-      </ThemeProvider>
-    </div>
+    </ThemeProvider>
   )
 }
 
