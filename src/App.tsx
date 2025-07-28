@@ -8,7 +8,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
+  //NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
 import {
   Tooltip,
@@ -72,33 +72,33 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       {/* Top nav */}
       <div className="p-4 border-b flex items-center justify-between">
-  {/* Left side: Navigation Menu */}
-  <NavigationMenu viewport={false}>
-    <NavigationMenuList>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <NavigationMenuLink>Link</NavigationMenuLink>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Item Two</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <NavigationMenuLink>Link Two</NavigationMenuLink>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Item Three</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <NavigationMenuLink>Link Three</NavigationMenuLink>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    </NavigationMenuList>
-  </NavigationMenu>
+      {/* Left side: Navigation Menu */}
+      <NavigationMenu viewport={false}>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <NavigationMenuLink>Link</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Item Two</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <NavigationMenuLink>Link Two</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Item Three</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <NavigationMenuLink>Link Three</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
-  {/* Right side: Mode Toggle */}
-  <ModeToggle />
-</div>
+      {/* Right side: Mode Toggle */}
+      <ModeToggle />
+    </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
