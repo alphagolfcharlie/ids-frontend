@@ -1,163 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
+import { AirportStatusCards } from "@/components/cards/statusCards"
 import { Label } from "@/components/ui/label"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  //NavigationMenuViewport,
-} from "@/components/ui/navigation-menu"
+
 
 import { ThemeProvider } from "@/components/theme-provider"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 import { Badge } from "@/components/ui/badge"
 
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "@/components/theme-provider"
 
-import { Progress } from "@/components/ui/progress"
+import { useState } from "react"
 
-import React, { useEffect, useState } from "react"
-
-
-
-
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-
-import { Textarea } from "@/components/ui/textarea"
-
-
-type AirportInfo = {
-  icao: string
-  metar: string
-  atis: string
-}
-
-
-type ApiResponse = {
-  [icao: string]: AirportInfo
-}
-
-function ReadMore({ text = "" }: { text?: string | null }) {
-  const safeText = typeof text === "string" ? text : "";
-  const [expanded, setExpanded] = useState(false);
-
-  const shouldTruncate = safeText.length > 200;
-  const displayText = expanded || !shouldTruncate
-    ? safeText
-    : safeText.slice(0, 200) + "...";
-
-  return (
-    <div>
-      <p className="whitespace-pre-wrap">{displayText}</p>
-      {shouldTruncate && (
-        <button
-          className="text-blue-500 text-sm mt-1 hover:underline"
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? "Read less" : "Read more"}
-        </button>
-      )}
-    </div>
-  );
-}
-export function AirportStatusCards() {
-  const [airportData, setAirportData] = useState<ApiResponse>({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function fetchAirportInfo() {
-      try {
-        const res = await fetch("https://ids.alphagolfcharlie.dev/api/airport_info")
-        const json = await res.json()
-        setAirportData(json)
-      } catch (err) {
-        setError("Failed to load airport data")
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAirportInfo()
-  }, [])
-
-  if (loading) return <p>Loading airport data...</p>
-  if (error) return <p className="text-red-500">{error}</p>
-
-  return (
-    <div className="h-full flex flex-col">
-      <ScrollArea className="flex-1 min-h-0 pr-4">
-        <div className="flex flex-col gap-4">
-          {Object.entries(airportData).map(([icao, info]) => (
-            <Card key={icao}>
-              <CardHeader>
-                <CardTitle>{icao}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div>
-                  <strong>METAR:</strong>
-                  <p className="break-words">{info.metar}</p>
-                </div>
-                <div>
-                  <strong>ATIS:</strong>
-                    <ReadMore text={info.atis} />
-                  </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
-    </div>
-  )
-}
-
-export function ResizableDemo() {
-  return (
-
-      <ResizablePanelGroup
-        direction="horizontal"
-        className="w-[70%] rounded-lg border"
-      >
-      <ResizablePanel defaultSize={1000}>
-        <div className="flex h-[400px] items-center justify-center p-12">
-          <span className="font-semibold">One</span>
-          <Textarea />
-        </div>
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel defaultSize={1000}>
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={500}>
-            <div className="flex h-full items-center justify-center p-12">
-              <span className="font-semibold">Two</span>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={1500}>
-            <div className="flex h-full items-center justify-center p-12">
-              <span className="font-semibold">Three</span>
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
-}
+import { MapView } from "@/components/map/mapView"
+import { Navbar } from "./components/ui/navbar"
 
   
 export function LinkAsButton() {
@@ -165,81 +21,6 @@ export function LinkAsButton() {
     <Button asChild>
       <a href="https://refs.clevelandcenter.org" className="text-blue-500 hover:underline">Refs</a>
     </Button>
-  )
-}
-
-
-export function DepartureInput({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
-  return (
-    <div className="grid w-full max-w-sm items-center gap-3 mt-6">
-      <Label htmlFor="departure">Departure</Label>
-      <Input type="text" id="departure" placeholder="DTW" value={value} onChange={onChange} />
-    </div>
-  )
-}
-
-export function ArrivalInput({ value, onChange }: { value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
-  return (
-    <div className="grid w-full max-w-sm items-center gap-3 mt-6">
-      <Label htmlFor="arrival">Destination</Label>
-      <Input type="text" id="destination" placeholder="JFK" value={value} onChange={onChange} />
-    </div>
-  )
-}
-
-export function FlightInputs({
-  departure,
-  setDeparture,
-  arrival,
-  setArrival,
-}: {
-  departure: string
-  setDeparture: (e: React.ChangeEvent<HTMLInputElement>) => void
-  arrival: string
-  setArrival: (e: React.ChangeEvent<HTMLInputElement>) => void
-}) {
-  return (
-    <div className="flex gap-4 max-w-md">
-      <DepartureInput value={departure} onChange={setDeparture} />
-      <ArrivalInput value={arrival} onChange={setArrival} />
-    </div>
-  )
-}
-
-
-export function ProgressDemo() {
-  const [progress, setProgress] = React.useState(13)
-  React.useEffect(() => {
-    const timer = setTimeout(() => setProgress(66), 500)
-    return () => clearTimeout(timer)
-  }, [])
-  return <Progress value={progress} className="w-[60%]" />
-}
-
-export function ModeToggle() {
-  const { setTheme } = useTheme()
- 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   )
 }
 
@@ -257,7 +38,6 @@ function App() {
   const [routesError, setRoutesError] = useState<string | null>(null);
   const [submittedRouteOrigin, setSubmittedRouteOrigin] = useState("");
   const [submittedRouteDestination, setSubmittedRouteDestination] = useState("");
-
 
   const fetchCrossings = async (destinationToFetch: string) => {
     setLoading(true)
@@ -300,20 +80,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
     <div className="min-h-screen flex flex-col">
       {/* Top Navigation */}
-      <div className="p-4 border-b flex items-center justify-between z-10 bg-background sticky top-0">
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink href="/">Home</NavigationMenuLink>
-                <NavigationMenuLink href="/about">About</NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-        <ModeToggle />
-      </div>
+      <Navbar />
   
       {/* Main Content Layout: Left (Airport Cards) and Right (Inputs/results) */}
       <div className="flex flex-1">
@@ -323,7 +90,7 @@ function App() {
         </div>
           
         {/* Right Content Area */}
-        <div className="w-3/4 p-6 overflow-y-auto space-y-10">
+        <div className="w-1/4 p-6 border-r overflow-y-auto space-y-10">
           {/* Crossings Input */}
           <div className="w-full max-w-sm">
             <form
@@ -463,6 +230,9 @@ function App() {
                 No routes found from {submittedRouteOrigin} to {submittedRouteDestination}.
               </p>
             )}
+        </div>
+        <div className="w-1/2 p-6">
+        <MapView />
         </div>
       </div>
     </div>
