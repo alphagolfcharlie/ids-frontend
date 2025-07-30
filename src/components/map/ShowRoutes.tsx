@@ -13,6 +13,7 @@ export function ShowRoutes({ map }: ShowRoutesProps) {
   const routeStatusRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState("")
   const [routeColor, setRouteColor] = useState("#00ffff")
+  const [loading, setLoading] = useState(false)
 
   const updateList = () => {} // stub — or replace with real handler
 
@@ -25,9 +26,11 @@ export function ShowRoutes({ map }: ShowRoutesProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (routeStatusRef.current) {
-      await plotWaypoints(inputValue, routeColor, routeStatusRef.current)
-    }
+    if (!map || !inputValue.trim()) return
+
+    setLoading(true)
+    await plotWaypoints(inputValue, routeColor, routeStatusRef.current!)
+    setLoading(false)
   }
 
   return (
@@ -36,7 +39,7 @@ export function ShowRoutes({ map }: ShowRoutesProps) {
       <Input
         id="waypointInput"
         type="text"
-        placeholder="e.g. HHOWE4.LNCON JHW Q82 PONCT PONCT.JFUND2"
+        placeholder="e.g. HHOWE4 LNCON JHW Q82 PONCT JFUND2"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value.toUpperCase())}
       />
@@ -50,7 +53,11 @@ export function ShowRoutes({ map }: ShowRoutesProps) {
           onChange={(e) => setRouteColor(e.target.value)}
           className="h-8 w-10 p-0 border rounded"
         />
-        <Button type="submit">Plot Route</Button>
+        <Button type="submit"
+        disabled={loading || inputValue.trim() === ""}
+        >
+        {loading ? "Loading..." : "Plot Route"}
+        </Button>
       </div>
 
       <div

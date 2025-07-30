@@ -137,7 +137,6 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
     fixes = await expandProcedure(fixes)
     fixes = fixes.filter(fix => /^[A-Z]{3,5}$/.test(fix))
 
-    statusDiv.innerText = "Loading route..."
     const missingFixes: string[] = []
 
     try {
