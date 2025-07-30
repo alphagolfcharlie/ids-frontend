@@ -41,37 +41,48 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
     const expanded: string[] = []
 
     for (let i = 0; i < fixes.length; i++) {
-      const current = fixes[i].toUpperCase()
-      const isAirway = /^[A-Z]{1,3}\d{1,4}$/i.test(current)
-      const isSTAR = /^[A-Z0-9]+\.[A-Z0-9]+$/.test(current)
-      const isSID = isSTAR && i === 0
-
-      if (isSID) {
-        const [transitionFix] = current.split(".")
-        expanded.push(transitionFix)
-        try {
-          const res = await fetch(`https://ids.alphagolfcharlie.dev/api/sid?code=${current}`)
-          const data = await res.json()
-          expanded.push(...(data.waypoints || [current]))
-        } catch {
-          expanded.push(current)
+        const current = fixes[i].toUpperCase()
+        const isAirway = /^[A-Z]{1,3}\d{1,4}$/.test(current)
+        const isProcedure = /^[A-Z]{5}\d{1,2}$/.test(current)
+      
+        // Handle SID (at start of route)
+        if (isProcedure && i === 0 && fixes[i + 1]) {
+          const sidTransition = fixes[i + 1].toUpperCase()
+          const sidCode = `${current}.${sidTransition}`
+      
+          //expanded.push(sidTransition)
+      
+          try {
+            const res = await fetch(`https://ids.alphagolfcharlie.dev/api/sid?code=${sidCode}`)
+            const data = await res.json()
+            expanded.push(...(data.waypoints || [current]))
+          } catch {
+            expanded.push(current, sidTransition)
+          }
+      
+          i++ // skip transition fix
+          continue
         }
-        continue
-      }
-
-      if (isSTAR) {
-        const [transitionFix] = current.split(".")
-        expanded.push(transitionFix)
-        try {
-          const res = await fetch(`https://ids.alphagolfcharlie.dev/api/star?code=${current}`)
-          const data = await res.json()
-          expanded.push(...(data.waypoints || [current]))
-        } catch {
-          expanded.push(current)
+      
+        // Handle STAR (at end of route)
+        if (isProcedure && i > 0) {
+          const starTransition = fixes[i - 1].toUpperCase()
+          const starCode = `${starTransition}.${current}`
+      
+          expanded.pop() // remove transition (will be re-added below)
+          //expanded.push(starTransition)
+      
+          try {
+            const res = await fetch(`https://ids.alphagolfcharlie.dev/api/star?code=${starCode}`)
+            const data = await res.json()
+            expanded.push(...(data.waypoints || [current]))
+          } catch {
+            expanded.push(current)
+          }
+      
+          continue
         }
-        continue
-      }
-
+      
       if (isAirway && i > 0 && i < fixes.length - 1) {
         const prev = expanded[expanded.length - 1]
         const nextFix = fixes[i + 1]
