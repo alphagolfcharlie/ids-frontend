@@ -15,6 +15,9 @@ import { useState } from "react"
 import { MapView } from "@/components/map/mapView"
 import { Navbar } from "./components/ui/navbar"
 
+import { CrossingsInput } from "./components/query/crossings"
+import { RoutesInput } from "./components/query/routes"
+
   
 export function LinkAsButton() {
   return (
@@ -89,151 +92,19 @@ function App() {
           <AirportStatusCards />
         </div>
           
+        <div className="w-1/2 p-6 border-r">
+        <MapView />
+        </div>
+
         {/* Right Content Area */}
         <div className="w-1/4 p-6 border-r overflow-y-auto space-y-10">
           {/* Crossings Input */}
-          <div className="w-full max-w-sm">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setDestination(inputValue);
-                fetchCrossings(inputValue);
-              }}
-            >
-              <Label htmlFor="destination">Destination</Label>
-              <Input
-                id="destination"
-                type="text"
-                placeholder="e.g. JFK"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value.toUpperCase())}
-                className="mt-2"
-              />
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                disabled={loading || !inputValue}
-              >
-                {loading ? "Loading..." : "Get Crossings"}
-              </Button>
-            </form>
-          </div>
-  
-          {error && <p className="text-red-500">{error}</p>}
-  
-          {crossings.length > 0 && (
-            <div className="w-full max-w-sm border rounded p-4 bg-background">
-            <h2 className="text-lg font-semibold mb-4">
-                Crossings for {destination}
-              </h2>
-              <ul className="space-y-4">
-                {crossings.map((crossing, index) => (
-                  <li key={index} className="border-b pb-2">
-                    <p><strong>Fix:</strong> {crossing.fix}</p>
-                    <p><strong>Restriction:</strong> {crossing.restriction}</p>
-                    <p><strong>Notes:</strong> {crossing.notes || "N/A"}</p>
-                    <p><strong>ARTCC:</strong> {crossing.artcc}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-  
-          {!loading && crossings.length === 0 && destination && (
-            <p className="text-gray-500">No crossings found for {destination}.</p>
-          )}
+          <CrossingsInput />
   
           {/* Routes Input */}
-          <div className="w-full max-w-sm">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSubmittedRouteOrigin(routeOrigin);
-                setSubmittedRouteDestination(routeDestination);
-                fetchRoutes();
-              }}
-            >
-              <Label htmlFor="routeOrigin">Route Origin</Label>
-              <Input
-                id="routeOrigin"
-                type="text"
-                placeholder="e.g. DTW"
-                value={routeOrigin}
-                onChange={(e) => setRouteOrigin(e.target.value.toUpperCase())}
-                className="mt-2"
-              />
-  
-              <Label htmlFor="routeDestination" className="mt-4 block">
-                Route Destination
-              </Label>
-              <Input
-                id="routeDestination"
-                type="text"
-                placeholder="e.g. MSP"
-                value={routeDestination}
-                onChange={(e) => setRouteDestination(e.target.value.toUpperCase())}
-                className="mt-2"
-              />
-  
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                disabled={routesLoading || !routeOrigin || !routeDestination}
-              >
-                {routesLoading ? "Loading..." : "Get Routes"}
-              </Button>
-            </form>
-          </div>
-  
-          {routesError && <p className="text-red-500">{routesError}</p>}
-  
-          {routes.length > 0 && (
-            <div className="w-full max-w-sm border rounded p-4 bg-background mt-6">
-              <h2 className="text-lg font-semibold mb-4">
-                Routes from {submittedRouteOrigin} to {submittedRouteDestination}
-              </h2>
-              <ul className="space-y-4">
-                {routes.map((route, index) => (
-                  <li key={index} className="border-b pb-2">
-                    <p><strong>Route:</strong> {route.route}</p>
-                    <p><strong>Altitude:</strong> {route.altitude || "N/A"}</p>
-                    <p><strong>Notes:</strong> {route.notes || "N/A"}</p>
-  
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {route.source === "faa" && (
-                        <Badge variant="default" className="bg-cyan-900 text-white">
-                          FAA Preferred Route
-                        </Badge>
-                      )}
-                      {route.isEvent && (
-                        <Badge variant="default" className="bg-fuchsia-500 text-white">
-                          Event Route
-                        </Badge>
-                      )}
-                      {route.isActive && route.hasFlows && (
-                        <Badge variant="default" className="bg-green-700 text-white">
-                          Route active for RW flow
-                        </Badge>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-  
-          {!routesLoading &&
-            routes.length === 0 &&
-            submittedRouteOrigin &&
-            submittedRouteDestination && (
-              <p className="text-gray-500">
-                No routes found from {submittedRouteOrigin} to {submittedRouteDestination}.
-              </p>
-            )}
+          <RoutesInput />
         </div>
-        <div className="w-1/2 p-6">
-        <MapView />
-        </div>
+
       </div>
     </div>
   </ThemeProvider>
