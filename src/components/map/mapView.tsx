@@ -1,12 +1,16 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTheme } from "@/components/theme-provider" // adjust path as needed
 import L from "leaflet"
+import { ShowRoutes } from "./showRoutes"
 import "leaflet/dist/leaflet.css"
+import { LoadAircraft } from "./loadAircraft"
+
 
 export function MapView() {
   const { theme } = useTheme()
   const mapRef = useRef<L.Map | null>(null)
   const tileLayerRef = useRef<L.TileLayer | null>(null)
+  const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
     const map = L.map("map").setView([41.4117, -81.8498], 7)
@@ -20,6 +24,7 @@ export function MapView() {
 
     tileLayer.addTo(map)
     tileLayerRef.current = tileLayer
+    setMapReady(true)
 
     return () => {
       map.remove()
@@ -35,8 +40,19 @@ export function MapView() {
 
   return (
     <div className="relative z-0">
-      <div id="map" style={{ height: "700px", width: "100%", borderRadius: "10px" }} />
-    </div>
+    <div
+      id="map"
+      style={{ height: "700px", width: "100%", borderRadius: "10px" }}
+    />
+    {mapReady && mapRef.current && (
+      <>
+        <LoadAircraft map={mapRef.current} />
+        <div className="mt-6">
+          <ShowRoutes map={mapRef.current} />
+        </div>
+      </>
+    )}
+  </div>
   )
 }
 
