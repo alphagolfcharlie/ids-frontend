@@ -62,8 +62,9 @@ export function ShowRoutes({ map }: ShowRoutesProps) {
 
       <div
         ref={routeStatusRef}
-        className="text-sm text-red-600 font-mono mt-1"
+        className="text-gray-500"
       />
     </form>
   )
 }
+

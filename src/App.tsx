@@ -8,6 +8,9 @@ import { Navbar } from "./components/ui/navbar"
 
 import { CrossingsInput } from "./components/query/crossings"
 import { RoutesInput } from "./components/query/routes"
+import { EnrouteInput } from "./components/query/enroute"
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
   
 
@@ -29,10 +32,24 @@ function App() {
           </div>
 
           <div className="w-1/4 p-6 border-r overflow-y-auto space-y-10">
-            <CrossingsInput />
-            <RoutesInput />
+          <Tabs defaultValue="routing" className="w-[400px]">
+            <TabsList>
+              <TabsTrigger value="routing">Clearance Routing</TabsTrigger>
+              <TabsTrigger value="crossings">External Crossings</TabsTrigger>
+              <TabsTrigger value="internalcrossings">Internal LOAs</TabsTrigger>
+            </TabsList>
+            <br></br>
+            <TabsContent value="routing">
+              <RoutesInput />
+            </TabsContent>
+            <TabsContent value="crossings">
+              <CrossingsInput />
+            </TabsContent>
+            <TabsContent value="internalcrossings">
+              <EnrouteInput />
+            </TabsContent>
+          </Tabs>
           </div>
-
         </div>
       </div>
     </ThemeProvider>

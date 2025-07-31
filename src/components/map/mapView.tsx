@@ -24,6 +24,22 @@ export function MapView() {
 
     tileLayer.addTo(map)
     tileLayerRef.current = tileLayer
+
+    // ✅ Fetch GeoJSON at runtime
+    fetch("/boundaries.geojson")
+    .then(res => res.json())
+    .then(data => {
+      const sectorLayer = L.geoJSON(data, {
+        style: {
+          color: "#3388ff",
+          weight: 1,
+          fillOpacity: 0.1,
+        },
+      })
+      sectorLayer.addTo(map)
+    })
+    .catch(console.error)
+
     setMapReady(true)
 
     return () => {
