@@ -48,11 +48,11 @@ export function EnrouteInput() {
           fetchEnroutes()
         }}
       >
-        <Label htmlFor="field">Field <span className="text-red-500">*</span></Label>
+        <Label htmlFor="field">Field</Label>
         <Input
           id="field"
           type="text"
-          placeholder="e.g. CLE"
+          placeholder="e.g. BUF"
           value={field}
           onChange={(e) => setField(e.target.value.toUpperCase())}
           className="mt-2"
@@ -63,7 +63,7 @@ export function EnrouteInput() {
         <Input
           id="area"
           type="text"
-          placeholder="e.g. 4"
+          placeholder="e.g. 7"
           value={area}
           onChange={(e) => setArea(e.target.value.trim())}
           className="mt-2"

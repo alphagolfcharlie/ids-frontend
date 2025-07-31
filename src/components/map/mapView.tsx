@@ -13,7 +13,7 @@ export function MapView() {
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
-    const map = L.map("map").setView([41.4117, -81.8498], 7)
+    const map = L.map("map").setView([41.5346, -80.6708], 6)
     mapRef.current = map
 
     const tileLayer = L.tileLayer(getTileUrl(theme), {

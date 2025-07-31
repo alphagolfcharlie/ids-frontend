@@ -16,10 +16,10 @@ export function Navbar() {
     <NavigationMenu>
         <NavigationMenuList>
         <NavigationMenuItem>
-            <NavigationMenuTrigger>Menu</NavigationMenuTrigger>
+            <NavigationMenuTrigger>External Links</NavigationMenuTrigger>
             <NavigationMenuContent>
-            <NavigationMenuLink href="/">Home</NavigationMenuLink>
-            <NavigationMenuLink href="/about">About</NavigationMenuLink>
+            <NavigationMenuLink href="https://refs.clevelandcenter.org">Refs</NavigationMenuLink>
+            <NavigationMenuLink href="https://clevelandcenter.org/downloads">SOPs/LOAs</NavigationMenuLink>
             </NavigationMenuContent>
         </NavigationMenuItem>
         </NavigationMenuList>
