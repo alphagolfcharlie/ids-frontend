@@ -2,7 +2,13 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"
 
 export function EnrouteInput() {
   const [field, setField] = useState("")
@@ -11,8 +17,16 @@ export function EnrouteInput() {
   const [enroutes, setEnroutes] = useState<any[]>([])
   const [searchField, setSearchField] = useState("")
   const [loading, setLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const itemsPerPage = 3
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = enroutes.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(enroutes.length / itemsPerPage)
 
   const fetchEnroutes = async () => {
+    setCurrentPage(1)
     if (!field) {
       setError("Field is required")
       return
@@ -76,8 +90,6 @@ export function EnrouteInput() {
         </Button>
       </form>
 
-      <br></br>
-
       {error && <p className="text-red-500">{error}</p>}
 
       {enroutes.length > 0 && (
@@ -86,7 +98,7 @@ export function EnrouteInput() {
             Enroute Info for {searchField}
           </h2>
           <ul className="space-y-4">
-            {enroutes.map((entry, index) => (
+            {currentItems.map((entry, index) => (
               <li key={index} className="border-b pb-2">
                 <p><strong>Field:</strong> {entry.field}</p>
                 <p><strong>Qualifier:</strong> {entry.qualifier}</p>
@@ -95,6 +107,26 @@ export function EnrouteInput() {
               </li>
             ))}
           </ul>
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
 
