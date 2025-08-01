@@ -40,7 +40,7 @@ export function CrossingsInput() {
         <Input
           id="destination"
           type="text"
-          placeholder="e.g. JFK"
+          placeholder="e.g. EWR"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value.toUpperCase())}
           className="mt-2"

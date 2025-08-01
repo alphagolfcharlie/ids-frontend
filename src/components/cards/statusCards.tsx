@@ -19,20 +19,39 @@ export function AirportStatusCards() {
     const [error, setError] = useState<string | null>(null)
   
     useEffect(() => {
+      let isMounted = true
+    
       async function fetchAirportInfo() {
         try {
           const res = await fetch("https://ids.alphagolfcharlie.dev/api/airport_info")
           const json = await res.json()
-          setAirportData(json)
+          if (isMounted) {
+            setAirportData(json)
+            setError(null)
+          }
         } catch (err) {
-          setError("Failed to load airport data")
+          if (isMounted) {
+            setError("Failed to load airport data")
+          }
         } finally {
-          setLoading(false)
+          if (isMounted) {
+            setLoading(false)
+          }
         }
       }
-  
+    
+      // Initial fetch
       fetchAirportInfo()
+    
+      // Polling interval every 5 minutes
+      const intervalId = setInterval(fetchAirportInfo, 5 * 60 * 1000) // 300000ms
+    
+      return () => {
+        isMounted = false
+        clearInterval(intervalId)
+      }
     }, [])
+    
   
     if (loading) return <p>Loading airport data...</p>
     if (error) return <p className="text-red-500">{error}</p>
