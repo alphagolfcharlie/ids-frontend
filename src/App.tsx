@@ -12,8 +12,6 @@ import { EnrouteInput } from "./components/query/enroute"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-  
-
 function App() {
 
   return (
@@ -22,10 +20,6 @@ function App() {
         <Navbar />
     
         <div className="flex flex-col md:flex-row flex-1">
-
-            
-
-          
 
           <div className="w-full md:w-1/4 p-4 md:p-6 border-r overflow-y-auto space-y-10">
           <Tabs defaultValue="routing" className="w-[400px]">
@@ -56,6 +50,11 @@ function App() {
           </div>
 
         </div>
+        {/* Footer */}
+        <footer className="text-center text-sm text-gray-400 p-4 border-t">
+          Site by Arya Chandrasekharan. This is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use. Always double-check information with relevant SOPs and LOAs.
+        </footer>
+
       </div>
     </ThemeProvider>
   
