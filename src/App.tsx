@@ -21,17 +21,13 @@ function App() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
     
-        <div className="flex flex-1">
+        <div className="flex flex-col md:flex-row flex-1">
 
-          <div className="w-1/4 border-r px-4 py-2 flex flex-col h-[calc(100vh-64px)]">
-            <AirportStatusCards />
-          </div>
             
-          <div className="w-1/2 p-6 border-r">
-          <MapView />
-          </div>
 
-          <div className="w-1/4 p-6 border-r overflow-y-auto space-y-10">
+          
+
+          <div className="w-full md:w-1/4 p-4 md:p-6 border-r overflow-y-auto space-y-10">
           <Tabs defaultValue="routing" className="w-[400px]">
             <TabsList>
               <TabsTrigger value="routing">Clearance Routing</TabsTrigger>
@@ -50,6 +46,15 @@ function App() {
             </TabsContent>
           </Tabs>
           </div>
+
+          <div className="w-full md:w-1/2 p-4 md:p-6 border-r">
+            <MapView />
+          </div>
+
+          <div className="w-full md:w-1/4 border-r px-4 py-2 flex flex-col h-auto md:h-[calc(100vh-64px)] overflow-auto">
+            <AirportStatusCards />
+          </div>
+
         </div>
       </div>
     </ThemeProvider>
