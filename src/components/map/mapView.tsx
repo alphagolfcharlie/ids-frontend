@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react"
-import { useTheme } from "@/components/theme-provider" // adjust path as needed
+import { useTheme } from "@/components/theme-provider"
 import L from "leaflet"
 import { ShowRoutes } from "./disproutes"
 import "leaflet/dist/leaflet.css"
 import { LoadAircraft } from "./loadAircraft"
+import type { FeatureCollection, GeoJsonObject } from "geojson"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -34,21 +35,42 @@ export function MapView() {
     tileLayer.addTo(map)
     tileLayerRef.current = tileLayer
 
-    // ✅ Fetch GeoJSON at runtime
-    fetch("/boundaries.geojson")
-    .then(res => res.json())
-    .then(data => {
-      const sectorLayer = L.geoJSON(data, {
-        style: {
-          color: "#3388ff",
-          weight: 1,
-          fillOpacity: 0.1,
-        },
+    // Fetch both sector boundaries and live ARTCC controllers
+    Promise.all([
+      fetch("/boundaries.geojson").then(res => res.json()),
+      fetch("https://ids.alphagolfcharlie.dev/api/controllers").then(res => res.json())
+    ])
+      .then(([geoData, controllerData]: [GeoJsonObject, any]) => {
+        //const features = (geoData as FeatureCollection).features || []
+
+        // Extract live ARTCC IDs (e.g., ["ZOA", "ZLA"])
+        const activeArtccs = new Set(
+          controllerData.controllers
+            .map((ctrl: any) => ctrl.artccId)
+            .filter(Boolean)
+        )
+
+        // Style function: green for active, blue for others
+        const styleFn: L.StyleFunction = (feature) => {
+          const id = feature?.properties?.id ?? ""
+          const artcc = id.replace(/^K/, "") // KZOA -> ZOA
+          const isActive = activeArtccs.has(artcc)
+        
+          return {
+            color: isActive ? "#00cc44" : "#3388ff",
+            weight: 1,
+            fillOpacity: 0.1,
+          }
+        }
+
+        const sectorLayer = L.geoJSON(geoData as FeatureCollection, {
+          style: styleFn
+        })
+
+        sectorLayerRef.current = sectorLayer
+        if (showSectors) sectorLayer.addTo(map)
       })
-      sectorLayerRef.current = sectorLayer
-      if (showSectors) sectorLayer.addTo(map)
-    })
-    .catch(console.error)
+      .catch(console.error)
 
     setMapReady(true)
 
@@ -64,10 +86,11 @@ export function MapView() {
     }
   }, [theme])
 
+  // Add or remove sector layer when toggle changes
   useEffect(() => {
     const map = mapRef.current
     const sectorLayer = sectorLayerRef.current
-  
+
     if (map && sectorLayer) {
       if (showSectors) {
         sectorLayer.addTo(map)
@@ -78,7 +101,6 @@ export function MapView() {
   }, [showSectors])
 
   return (
-    
     <div className="relative z-0">
       <div className="absolute top-4 right-4 z-[1000]">
         <DropdownMenu>
@@ -101,19 +123,21 @@ export function MapView() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    <div
-      id="map"
-      style={{ height: "700px", width: "100%", borderRadius: "10px" }}
-    />
-    {mapReady && mapRef.current && (
-      <>
-        {showTraffic && <LoadAircraft map={mapRef.current} />}
-        <div className="mt-6">
-          <ShowRoutes map={mapRef.current} />
-        </div>
-      </>
-    )}
-  </div>
+
+      <div
+        id="map"
+        style={{ height: "700px", width: "100%", borderRadius: "10px" }}
+      />
+
+      {mapReady && mapRef.current && (
+        <>
+          {showTraffic && <LoadAircraft map={mapRef.current} />}
+          <div className="mt-6">
+            <ShowRoutes map={mapRef.current} />
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 
