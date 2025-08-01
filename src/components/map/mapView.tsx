@@ -59,7 +59,7 @@ export function MapView() {
           return {
             color: isActive ? "#00cc44" : "#3388ff",
             weight: 1,
-            fillOpacity: 0.1,
+            fillOpacity: isActive ? 0.2: 0.1,
           }
         }
 
