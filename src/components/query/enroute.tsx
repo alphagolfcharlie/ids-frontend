@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 export function EnrouteInput() {
@@ -41,7 +40,6 @@ export function EnrouteInput() {
 
   return (
     <div className="w-full max-w-sm space-y-4">
-      <ScrollArea className="flex-1 min-h-0 pr-4">
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -103,7 +101,6 @@ export function EnrouteInput() {
       {!loading && enroutes.length === 0 && searchField && (
         <p className="text-gray-500">No enroute data found for {searchField}.</p>
       )}
-    </ScrollArea>
     </div>
   )
 }
