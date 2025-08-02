@@ -11,6 +11,7 @@ import { RoutesInput } from "./components/query/routes"
 import { EnrouteInput } from "./components/query/enroute"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 function App() {
 
@@ -42,7 +43,10 @@ function App() {
           </div>
 
           <div className="w-full md:w-1/2 p-4 md:p-6 border-r">
-            <MapView />
+          <AspectRatio ratio={16 / 9}>
+            <MapView />          
+          </AspectRatio>
+
           </div>
 
           <div className="w-full md:w-1/4 border-r px-4 py-2 flex flex-col h-auto md:h-[calc(100vh-64px)] overflow-auto">

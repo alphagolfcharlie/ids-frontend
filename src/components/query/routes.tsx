@@ -46,7 +46,7 @@ export function RoutesInput() {
         <Input
           id="routeOrigin"
           type="text"
-          placeholder="e.g. DTW"
+          placeholder="e.g. DTW or KDTW"
           value={routeOrigin}
           onChange={(e) => setRouteOrigin(e.target.value.toUpperCase())}
           className="mt-2"
@@ -58,7 +58,7 @@ export function RoutesInput() {
         <Input
           id="routeDestination"
           type="text"
-          placeholder="e.g. MSP"
+          placeholder="e.g. MSP or KMSP"
           value={routeDestination}
           onChange={(e) => setRouteDestination(e.target.value.toUpperCase())}
           className="mt-2"
