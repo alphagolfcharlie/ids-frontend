@@ -7,7 +7,7 @@ import { MapView } from "@/components/map/mapView"
 import { Navbar } from "./components/ui/navbar"
 
 import { CrossingsInput } from "./components/query/crossings"
-import { RoutesInput } from "./components/query/routes"
+import RoutesForm  from "./components/query/routes"
 import { EnrouteInput } from "./components/query/enroute"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,7 +31,7 @@ function App() {
             </TabsList>
             <br></br>
             <TabsContent value="routing">
-              <RoutesInput />
+              <RoutesForm />
             </TabsContent>
             <TabsContent value="crossings">
               <CrossingsInput />

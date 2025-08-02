@@ -1,10 +1,12 @@
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-export function RoutesInput() {
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // React Router for accessing the URL
+
+const RoutesForm = () => {
   const [routeOrigin, setRouteOrigin] = useState("");
   const [routeDestination, setRouteDestination] = useState("");
   const [submittedRouteOrigin, setSubmittedRouteOrigin] = useState("");
@@ -12,6 +14,8 @@ export function RoutesInput() {
   const [routesLoading, setRoutesLoading] = useState(false);
   const [routesError, setRoutesError] = useState<string | null>(null);
   const [routes, setRoutes] = useState<any[]>([]);
+
+  const location = useLocation(); // Access the current URL
 
   const fetchRoutes = async () => {
     setRoutesLoading(true);
@@ -31,6 +35,27 @@ export function RoutesInput() {
       setRoutesLoading(false);
     }
   };
+
+  // Parse query parameters and populate form fields
+  useEffect(() => {
+    const params = new URLSearchParams(location.search); // Get query parameters from the URL
+    const dep = params.get("dep"); // Extract "dep" parameter
+    const dest = params.get("dest"); // Extract "dest" parameter
+
+    if (dep && dest) {
+      setRouteOrigin(dep.toUpperCase());
+      setRouteDestination(dest.toUpperCase());
+      setSubmittedRouteOrigin(dep.toUpperCase());
+      setSubmittedRouteDestination(dest.toUpperCase());
+    }
+  }, [location.search]); // Run this effect whenever the URL changes
+
+  // Trigger fetchRoutes when both routeOrigin and routeDestination are set
+  useEffect(() => {
+    if (routeOrigin && routeDestination) {
+      fetchRoutes();
+    }
+  }, [routeOrigin, routeDestination]); // Run this effect whenever routeOrigin or routeDestination changes
 
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -58,7 +83,7 @@ export function RoutesInput() {
         <Input
           id="routeDestination"
           type="text"
-          placeholder="e.g. MSP or KMSP"
+          placeholder="e.g. ORD or KORD"
           value={routeDestination}
           onChange={(e) => setRouteDestination(e.target.value.toUpperCase())}
           className="mt-2"
@@ -121,3 +146,5 @@ export function RoutesInput() {
     </div>
   );
 }
+
+export default RoutesForm;
