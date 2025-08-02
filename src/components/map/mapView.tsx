@@ -198,13 +198,13 @@ export function MapView() {
               checked={showSectors}
               onCheckedChange={setShowSectors}
             >
-              Sectors (ARTCC)
+              ARTCCs
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={showTracons}
               onCheckedChange={setShowTracons}
             >
-              TRACONs
+              ZOB TRACONs
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
