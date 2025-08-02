@@ -3,8 +3,8 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom"; // React Router for accessing the URL
+import { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom"; // React Router for accessing the URL
 
 const RoutesForm = () => {
   const [routeOrigin, setRouteOrigin] = useState("");
@@ -16,6 +16,9 @@ const RoutesForm = () => {
   const [routes, setRoutes] = useState<any[]>([]);
 
   const location = useLocation(); // Access the current URL
+  const navigate = useNavigate(); // Hook to programmatically update the URL
+
+  const isUrlUpdate = useRef(false); // Track if the update is from the URL
 
   const fetchRoutes = async () => {
     setRoutesLoading(true);
@@ -43,6 +46,7 @@ const RoutesForm = () => {
     const dest = params.get("dest"); // Extract "dest" parameter
 
     if (dep && dest) {
+      isUrlUpdate.current = true; // Mark this as a URL-based update
       setRouteOrigin(dep.toUpperCase());
       setRouteDestination(dest.toUpperCase());
       setSubmittedRouteOrigin(dep.toUpperCase());
@@ -50,30 +54,41 @@ const RoutesForm = () => {
     }
   }, [location.search]); // Run this effect whenever the URL changes
 
-  // Trigger fetchRoutes when both routeOrigin and routeDestination are set
+  // Trigger fetchRoutes only for URL-based updates
   useEffect(() => {
-    if (routeOrigin && routeDestination) {
+    if (isUrlUpdate.current && routeOrigin && routeDestination) {
       fetchRoutes();
+      isUrlUpdate.current = false; // Reset the flag after fetching
     }
   }, [routeOrigin, routeDestination]); // Run this effect whenever routeOrigin or routeDestination changes
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Update the submitted values
+    setSubmittedRouteOrigin(routeOrigin);
+    setSubmittedRouteDestination(routeDestination);
+
+    // Update the URL with the new query parameters
+    navigate(`/routes?dep=${routeOrigin}&dest=${routeDestination}`);
+
+    // Fetch routes for the new origin and destination
+    fetchRoutes();
+  };
+
   return (
     <div className="w-full max-w-sm space-y-6">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSubmittedRouteOrigin(routeOrigin);
-          setSubmittedRouteDestination(routeDestination);
-          fetchRoutes();
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <Label htmlFor="routeOrigin">Route Origin</Label>
         <Input
           id="routeOrigin"
           type="text"
           placeholder="e.g. DTW or KDTW"
           value={routeOrigin}
-          onChange={(e) => setRouteOrigin(e.target.value.toUpperCase())}
+          onChange={(e) => {
+            isUrlUpdate.current = false; // Ensure this is treated as user input
+            setRouteOrigin(e.target.value.toUpperCase());
+          }}
           className="mt-2"
         />
 
@@ -85,7 +100,10 @@ const RoutesForm = () => {
           type="text"
           placeholder="e.g. ORD or KORD"
           value={routeDestination}
-          onChange={(e) => setRouteDestination(e.target.value.toUpperCase())}
+          onChange={(e) => {
+            isUrlUpdate.current = false; // Ensure this is treated as user input
+            setRouteDestination(e.target.value.toUpperCase());
+          }}          
           className="mt-2"
         />
 
