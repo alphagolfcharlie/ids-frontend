@@ -21,22 +21,19 @@ export function MapView() {
   const [mapReady, setMapReady] = useState(false)
   const [showTraffic, setShowTraffic] = useState(true)
   const [showSectors, setShowSectors] = useState(true)   // ARTCC toggle
-  const [showTracons, setShowTracons] = useState(false)   // TRACON toggle
+  const [showTracons, setShowTracons] = useState(true)   // TRACON toggle
 
   const artccLayerRef = useRef<L.LayerGroup | null>(null)
   const traconLayerRef = useRef<L.LayerGroup | null>(null)
 
-  useEffect(() => {
-    const map = L.map("map").setView([41.5346, -80.6708], 6)
-    mapRef.current = map
+  // Helper to normalize IDs
+  const normalize = (id: string | undefined) =>
+    (id ?? "").replace(/^K/, "").trim().toUpperCase()
 
-    const tileLayer = L.tileLayer(getTileUrl(theme), {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: "abcd",
-      maxZoom: 19,
-    })
-    tileLayer.addTo(map)
-    tileLayerRef.current = tileLayer
+  // Function to fetch & update sector layers
+  function loadSectors() {
+    const map = mapRef.current
+    if (!map) return
 
     Promise.all([
       fetch("/boundaries.geojson").then(res => res.json()),   // ARTCCs
@@ -44,9 +41,7 @@ export function MapView() {
       fetch("https://ids.alphagolfcharlie.dev/api/controllers").then(res => res.json())
     ])
       .then(([artccGeo, traconGeo, controllerData]: [FeatureCollection, FeatureCollection, any]) => {
-        const normalize = (id: string | undefined) =>
-          (id ?? "").replace(/^K/, "").trim().toUpperCase()
-
+        // Determine active ARTCCs and TRACONs
         const activeArtccs = new Set(
           controllerData.controllers
             .filter((ctrl: any) => ctrl.isActive && !ctrl.isObserver)
@@ -80,7 +75,7 @@ export function MapView() {
           }
         })
 
-        artccLayerRef.current = L.layerGroup([inactiveArtccLayer, activeArtccLayer])
+        const newArtccLayer = L.layerGroup([inactiveArtccLayer, activeArtccLayer])
 
         // --- TRACONs ---
         const traconFeatures = traconGeo.features
@@ -103,22 +98,54 @@ export function MapView() {
           }
         })
 
-        traconLayerRef.current = L.layerGroup([inactiveTraconLayer, activeTraconLayer])
+        const newTraconLayer = L.layerGroup([inactiveTraconLayer, activeTraconLayer])
 
-        // Add initial layers based on toggles
-        if (showSectors) artccLayerRef.current.addTo(map)
-        if (showTracons) traconLayerRef.current.addTo(map)
+        // Remove old layers if exist
+        if (artccLayerRef.current) {
+          map.removeLayer(artccLayerRef.current)
+        }
+        if (traconLayerRef.current) {
+          map.removeLayer(traconLayerRef.current)
+        }
+
+        artccLayerRef.current = newArtccLayer
+        traconLayerRef.current = newTraconLayer
+
+        // Add layers if toggled on
+        if (showSectors) newArtccLayer.addTo(map)
+        if (showTracons) newTraconLayer.addTo(map)
       })
       .catch(console.error)
+  }
 
+  useEffect(() => {
+    const map = L.map("map").setView([41.5346, -80.6708], 6)
+    mapRef.current = map
+
+    const tileLayer = L.tileLayer(getTileUrl(theme), {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 19,
+    })
+    tileLayer.addTo(map)
+    tileLayerRef.current = tileLayer
+
+    // Initial load
+    loadSectors()
     setMapReady(true)
 
+    // Set interval to update every 60 seconds
+    const intervalId = setInterval(() => {
+      loadSectors()
+    }, 60 * 1000)
+
     return () => {
+      clearInterval(intervalId)
       map.remove()
     }
   }, [])
 
-  // Update tile layer when theme changes
+  // Update tile layer on theme change
   useEffect(() => {
     if (tileLayerRef.current) {
       tileLayerRef.current.setUrl(getTileUrl(theme))
