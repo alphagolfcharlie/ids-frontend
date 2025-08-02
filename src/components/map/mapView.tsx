@@ -19,7 +19,7 @@ export function MapView() {
   const tileLayerRef = useRef<L.TileLayer | null>(null)
 
   const [mapReady, setMapReady] = useState(false)
-  const [showTraffic, setShowTraffic] = useState(true)
+  const [showTraffic, setShowTraffic] = useState(true)   // Live traffic toggle 
   const [showSectors, setShowSectors] = useState(true)   // ARTCC toggle
   const [showTracons, setShowTracons] = useState(true)   // TRACON toggle
 
@@ -210,10 +210,7 @@ export function MapView() {
         </DropdownMenu>
       </div>
 
-      <div
-        id="map"
-        style={{ height: "700px", width: "100%", borderRadius: "10px" }}
-      />
+      <div id="map" className="h-[700px] w-full rounded-lg" />
 
       {mapReady && mapRef.current && (
         <>
