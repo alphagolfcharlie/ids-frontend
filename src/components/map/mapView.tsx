@@ -4,7 +4,7 @@ import L from "leaflet"
 import { ShowRoutes } from "./disproutes"
 import "leaflet/dist/leaflet.css"
 import { LoadAircraft } from "./loadAircraft"
-import type { FeatureCollection, GeoJsonObject } from "geojson"
+import type { FeatureCollection } from "geojson"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -20,65 +20,111 @@ export function MapView() {
   const [mapReady, setMapReady] = useState(false)
   const [showTraffic, setShowTraffic] = useState(true)
   const [showSectors, setShowSectors] = useState(true)
-  const sectorLayerRef = useRef<L.GeoJSON | null>(null)
+  const sectorLayerRef = useRef<L.Layer | null>(null)
+  const [showTracons, setShowTracons] = useState(true)
+
+
 
   useEffect(() => {
     const map = L.map("map").setView([41.5346, -80.6708], 6)
     mapRef.current = map
-
+  
     const tileLayer = L.tileLayer(getTileUrl(theme), {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
       subdomains: "abcd",
       maxZoom: 19,
     })
-
+  
     tileLayer.addTo(map)
     tileLayerRef.current = tileLayer
-
-    // Fetch both sector boundaries and live ARTCC controllers
+  
     Promise.all([
-      fetch("/boundaries.geojson").then(res => res.json()),
-      fetch("https://ids.alphagolfcharlie.dev/api/controllers").then(res => res.json())
+      fetch("/boundaries.geojson").then(res => res.json()),   // ARTCCs
+      fetch("/tracon.geojson").then(res => res.json()),      // TRACONs
+      fetch("http://127.0.0.1:5000/api/controllers").then(res => res.json())
     ])
-      .then(([geoData, controllerData]: [GeoJsonObject, any]) => {
-        //const features = (geoData as FeatureCollection).features || []
-
-        // Extract live ARTCC IDs (e.g., ["ZOA", "ZLA"])
+      .then(([artccGeo, traconGeo, controllerData]: [FeatureCollection, FeatureCollection, any]) => {
+        const normalize = (id: string | undefined) =>
+          (id ?? "").replace(/^K/, "").trim().toUpperCase()
+    
         const activeArtccs = new Set(
           controllerData.controllers
-            .map((ctrl: any) => ctrl.artccId)
-            .filter(Boolean)
+            .filter((ctrl: any) => ctrl.isActive && !ctrl.isObserver)
+            .map((ctrl: any) => normalize(ctrl.artccId))
         )
-
-        // Style function: green for active, blue for others
-        const styleFn: L.StyleFunction = (feature) => {
-          const id = feature?.properties?.id ?? ""
-          const artcc = id.replace(/^K/, "") // KZOA -> ZOA
-          const isActive = activeArtccs.has(artcc)
-        
-          return {
-            color: isActive ? "#00cc44" : "#3388ff",
+    
+        const activeTracons = new Set(
+          controllerData.tracon
+            .filter((ctrl: any) => ctrl.isActive && !ctrl.isObserver)
+            .map((ctrl: any) => normalize(ctrl.primaryFacilityId))
+        )
+    
+        // --- ARTCCs ---
+        const artccFeatures = artccGeo.features
+        const artccActive = artccFeatures.filter(f => activeArtccs.has(normalize(f.properties?.id)))
+        const artccInactive = artccFeatures.filter(f => !activeArtccs.has(normalize(f.properties?.id)))
+    
+        const inactiveArtccLayer = L.geoJSON(artccInactive, {
+          style: {
+            color: "#808080",
             weight: 1,
-            fillOpacity: isActive ? 0.2: 0.1,
+            fillOpacity: 0.1
           }
-        }
-
-        const sectorLayer = L.geoJSON(geoData as FeatureCollection, {
-          style: styleFn
         })
-
+    
+        const activeArtccLayer = L.geoJSON(artccActive, {
+          style: {
+            color: "#00cc44",
+            weight: 1,
+            fillOpacity: 0.2
+          }
+        })
+    
+        // --- TRACONs ---
+        const traconFeatures = traconGeo.features
+        const traconActive = traconFeatures.filter(f => activeTracons.has(normalize(f.properties?.id)))
+        const traconInactive = traconFeatures.filter(f => !activeTracons.has(normalize(f.properties?.id)))
+    
+        const inactiveTraconLayer = L.geoJSON(traconInactive, {
+          style: {
+            color: "#808080",
+            weight: 1,
+            fillOpacity: 0.1
+          }
+        })
+    
+        const activeTraconLayer = L.geoJSON(traconActive, {
+          style: {
+            color: "#00cc44",
+            weight: 1,
+            fillOpacity: 0.2
+          }
+        })
+    
+        // --- Combine all layers with correct draw order ---
+        const sectorLayer = L.layerGroup([
+          inactiveArtccLayer,
+          inactiveTraconLayer,
+          activeArtccLayer,
+          activeTraconLayer
+        ])
+    
         sectorLayerRef.current = sectorLayer
         if (showSectors) sectorLayer.addTo(map)
       })
       .catch(console.error)
+    
 
+  
     setMapReady(true)
-
+  
     return () => {
       map.remove()
     }
   }, [])
-
+  
+  
+  
   // Update tile layer when theme changes
   useEffect(() => {
     if (tileLayerRef.current) {
@@ -103,25 +149,31 @@ export function MapView() {
   return (
     <div className="relative z-0">
       <div className="absolute top-4 right-4 z-[1000]">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>Map Layers</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-32">
-            <DropdownMenuCheckboxItem
-              checked={showTraffic}
-              onCheckedChange={setShowTraffic}
-            >
-              Live Traffic
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={showSectors}
-              onCheckedChange={setShowSectors}
-            >
-              Sectors
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>Map Layers</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-32">
+          <DropdownMenuCheckboxItem
+            checked={showTraffic}
+            onCheckedChange={setShowTraffic}
+          >
+            Live Traffic
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showSectors}
+            onCheckedChange={setShowSectors}
+          >
+            Sectors (ARTCC)
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showTracons}
+            onCheckedChange={setShowTracons}
+          >
+            TRACONs
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       </div>
 
       <div
