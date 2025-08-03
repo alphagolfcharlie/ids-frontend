@@ -123,8 +123,21 @@ export function CrossingsTable() {
             alert("Error deleting crossing: " + (err as Error).message);
         }
         };
+      // Open the dialog for creating a new entry
+    const handleCreateEntry = () => {
+        setEditingCrossing(null); // No crossing is being edited
+        setEditForm({
+        _id: "",
+        destination: "",
+        bdry_fix: "",
+        restriction: "",
+        notes: "",
+        artcc: "",
+        }); // Initialize the form with default values
+        setIsDialogOpen(true); // Open the dialog
+    };
 
-    const handleEditCrossing = (crossing: any) => {
+    const handleSaveEntry = (crossing: any) => {
         setEditingCrossing(crossing); // Set the crossing being edited
         setEditForm({ ...crossing }); // Initialize the edit form with the crossing's current data
         setIsDialogOpen(true); // Open the edit modal
@@ -139,31 +152,38 @@ export function CrossingsTable() {
             }
         
         
-            const response = await fetch(`https://ids.alphagolfcharlie.dev/api/crossings/${editingCrossing?._id}`, {
-            method: "PUT",
+            const url = editingCrossing
+            ? `https://ids.alphagolfcharlie.dev/api/crossings/${editingCrossing._id}` // PUT for editing
+            : `https://ids.alphagolfcharlie.dev/api/crossings`; // POST for creating
+    
+          const method = editingCrossing ? "PUT" : "POST"; // Determine the HTTP method
+    
+          const response = await fetch(url, {
+            method,
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Include JWT token
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include JWT token
             },
             body: JSON.stringify(editForm),
-            });
+          });
         
-            if (!response.ok) {
-            throw new Error("Failed to update crossing");
-            }
+          if (!response.ok) {
+            throw new Error(`Failed to ${editingCrossing ? "update" : "create"} crossing`);
+          }
+    
         
             //const updatedCrossing = await response.json();
         
-            alert("Crossing updated successfully!");
+            alert(`Crossing ${editingCrossing ? "updated" : "created"} successfully!`);
             setIsDialogOpen(false); // Close the dialog
         
             // Re-fetch the crossings to refresh the table
             fetchCrossings();
-        } catch (err) {
-            console.error("Error updating crossing:", err);
-            alert("Failed to update crossing. Please try again.");
+            } catch (err) {
+            console.error(`Error ${editingCrossing ? "updating" : "creating"} crossing:`, err);
+            alert(`Failed to ${editingCrossing ? "update" : "create"} crossing. Please try again.`);
+            }
         };
-    };
     const handleCancelEdit = () => {
         setIsDialogOpen(false); // Close the dialog
     };
@@ -229,7 +249,7 @@ export function CrossingsTable() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleEditCrossing(crossing)}
+                    onClick={() => handleSaveEntry(crossing)}
                   >
                     Edit
                   </Button>
@@ -276,22 +296,32 @@ export function CrossingsTable() {
 
       {!loading && crossings.length > 0 && (
         <>
-          <div className="flex items-center py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+        <div className="flex flex-wrap items-center gap-4">
+            {/* Create Entry Button */}
+            <Button onClick={handleCreateEntry}>
+            Create New Entry
+            </Button>
+
+            {/* Filter Input */}
             <Input
-              placeholder="Filter by destination..."
-              value={(table.getColumn("destination")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
+            placeholder="Filter by destination..."
+            value={(table.getColumn("destination")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
                 table.getColumn("destination")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
+            }
+            className="w-64"
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+        </div>
+
+        {/* Columns Dropdown */}
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
@@ -391,7 +421,7 @@ export function CrossingsTable() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
             <DialogHeader>
-            <DialogTitle>Edit Crossing</DialogTitle>
+            <DialogTitle>{editingCrossing ? "Edit Crossing" : "Create New Crossing"}</DialogTitle>
             <DialogDescription>Ensure information is correct per SOP/LOA</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -445,8 +475,8 @@ export function CrossingsTable() {
             <Button type="button" variant="outline" onClick={handleCancelEdit}>
                 Cancel
             </Button>
-            <Button type="button" onClick={handleSaveEdit}>
-                Save
+            <Button type="button" onClick={handleSaveEdit} disabled={loading}>
+            {loading ? "Saving..." : editingCrossing ? "Save Changes" : "Create Entry"}
             </Button>
             </DialogFooter>
         </DialogContent>
