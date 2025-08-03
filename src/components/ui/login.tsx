@@ -27,21 +27,37 @@ import { useNavigate } from "react-router-dom";
 
 export function LoginDialog() {
     const navigate = useNavigate()
-    const authorizedEmails = import.meta.env.VITE_AUTHORIZED_EMAILS.split(","); // Access authorized emails from the environment
 
-    const handleGoogleLoginSuccess = (credentialResponse: any) => {
-        const decoded: any = jwtDecode(credentialResponse.credential); // Decode the JWT
-        //console.log("User Info:", decoded);
+    const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+        try {
+          // Decode the Google ID token to get user info (optional)
+          const decoded: any = jwtDecode(credentialResponse.credential);
+          console.log("Google User Info:", decoded);
     
-        const userEmail = decoded.email;
+          // Send the Google ID token to your backend for verification
+          const response = await fetch("http://127.0.0.1:5000/api/google-login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token: credentialResponse.credential }),
+          });
     
-        // Check if the user's email is authorized
-        if (authorizedEmails.includes(userEmail)) {
-          console.log("Authorized user");
-          navigate("/admin"); // Redirect to the admin page
-        } else {
-          console.error("Unauthorized user");
-          alert("You are not authorized to access the admin page.");
+          if (!response.ok) {
+            throw new Error("Failed to log in");
+          }
+    
+          const data = await response.json();
+          console.log("Backend Response:", data);
+    
+          // Store the backend-issued JWT
+          localStorage.setItem("authToken", data.token);
+    
+          // Redirect to the admin page
+          navigate("/admin");
+        } catch (err) {
+          console.error("Login failed:", err);
+          alert("Login failed. Please try again.");
         }
       };
     
