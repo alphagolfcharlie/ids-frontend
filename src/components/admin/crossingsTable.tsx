@@ -19,6 +19,13 @@ import { flexRender } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 "use client";
 
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+  } from "@/components/ui/select";
 
 import {
     Dialog,
@@ -392,30 +399,55 @@ export function CrossingsTable() {
               </TableBody>
             </Table>
           </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="text-muted-foreground flex-1 text-sm">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <div className="flex items-center justify-between py-4 flex-wrap gap-4">
+  {/* Left: Selected row info and rows per page */}
+  <div className="flex items-center gap-6 text-sm text-muted-foreground">
+    <div>
+      {table.getFilteredSelectedRowModel().rows.length} of{" "}
+      {table.getFilteredRowModel().rows.length} row(s) selected.
+    </div>
+
+    <div className="flex items-center gap-2">
+        <span>Rows per page:</span>
+        <Select
+            value={String(table.getState().pagination.pageSize)}
+            onValueChange={(value) => table.setPageSize(Number(value))}
+        >
+            <SelectTrigger className="w-[80px]">
+            <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+            {[10, 20, 30, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={String(pageSize)}>
+                {pageSize}
+                </SelectItem>
+            ))}
+            </SelectContent>
+        </Select>
+        </div>
+    </div>
+
+    {/* Right: Pagination controls */}
+    <div className="flex items-center space-x-2">
+        <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+        >
+        Previous
+        </Button>
+        <Button
+        variant="outline"
+        size="sm"
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+        >
+        Next
+        </Button>
+    </div>
+    </div>
+
         </>
       )}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
