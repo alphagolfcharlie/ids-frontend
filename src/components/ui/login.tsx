@@ -13,14 +13,14 @@ import {
     //CardAction,
     CardContent,
     CardDescription,
-    CardFooter,
+    //CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
 //import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 //import { Label } from "@/components/ui/label";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";  
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
