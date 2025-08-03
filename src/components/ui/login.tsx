@@ -35,7 +35,7 @@ export function LoginDialog() {
           console.log("Google User Info:", decoded);
     
           // Send the Google ID token to your backend for verification
-          const response = await fetch("http://127.0.0.1:5000/api/google-login", {
+          const response = await fetch("https://ids.alphagolfcharlie.dev/api/google-login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

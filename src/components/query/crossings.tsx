@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"; // Import hooks for navigation and location
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,9 @@ export function CrossingsInput() {
   const [crossings, setCrossings] = useState<any[]>([])
   const [destination, setDestination] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate(); // Hook to update the URL
+  const location = useLocation(); // Hook to get the current URL
 
   const fetchCrossings = async (destinationToFetch: string) => {
     setLoading(true)
@@ -28,14 +32,30 @@ export function CrossingsInput() {
     }
   }
 
+  // Parse query parameters and populate the input field
+  useEffect(() => {
+    const params = new URLSearchParams(location.search); // Get query parameters from the URL
+    const dest = params.get("destination"); // Extract "destination" parameter
+
+    if (dest) {
+      setInputValue(dest.toUpperCase()); // Populate the input field
+      fetchCrossings(dest.toUpperCase()); // Fetch crossings for the destination
+    }
+  }, [location.search]); // Run this effect whenever the URL changes
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Update the URL with the new query parameter
+    navigate(`?destination=${inputValue}`);
+
+    // Fetch crossings for the new destination
+    fetchCrossings(inputValue);
+  };
+
   return (
     <div className="w-full max-w-sm space-y-4">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          fetchCrossings(inputValue)
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <Label htmlFor="destination">Destination</Label>
         <Input
           id="destination"
