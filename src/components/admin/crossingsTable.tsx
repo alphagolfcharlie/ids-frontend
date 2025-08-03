@@ -58,6 +58,7 @@ export type Crossing = {
   
 
 export function CrossingsTable() {
+
     const [crossings, setCrossings] = useState<Crossing[]>([]); // State to store crossings
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState<string | null>(null); // Error state
@@ -161,9 +162,8 @@ export function CrossingsTable() {
         } catch (err) {
             console.error("Error updating crossing:", err);
             alert("Failed to update crossing. Please try again.");
-        }
         };
-
+    };
     const handleCancelEdit = () => {
         setIsDialogOpen(false); // Close the dialog
     };
@@ -269,7 +269,7 @@ export function CrossingsTable() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 
-
+    
 
       {loading && <p>Loading crossings...</p>}
       {error && <p className="text-red-500">{error}</p>}
