@@ -31,16 +31,16 @@ export function LoginDialog() {
 
     const handleGoogleLoginSuccess = (credentialResponse: any) => {
         const decoded: any = jwtDecode(credentialResponse.credential); // Decode the JWT
-        console.log("User Info:", decoded);
+        //console.log("User Info:", decoded);
     
         const userEmail = decoded.email;
     
         // Check if the user's email is authorized
         if (authorizedEmails.includes(userEmail)) {
-          console.log("Authorized user:", userEmail);
+          console.log("Authorized user");
           navigate("/admin"); // Redirect to the admin page
         } else {
-          console.error("Unauthorized user:", userEmail);
+          console.error("Unauthorized user");
           alert("You are not authorized to access the admin page.");
         }
       };
