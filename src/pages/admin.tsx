@@ -7,6 +7,7 @@ import { Navbar } from "@/components/ui/navbar"; // Import your Navbar component
 import { CrossingsTable } from "@/components/admin/crossingsTable";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { EnrouteTable } from "@/components/admin/enrouteTable";
 
 export type Crossing = {
   _id: string;
@@ -37,7 +38,7 @@ export function AdminPage() {
               <CrossingsTable />
             </TabsContent>
             <TabsContent value="internalcrossings">
-              <p>Coming soon!</p>
+              <EnrouteTable />
             </TabsContent>
           </Tabs>
     </div>

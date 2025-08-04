@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 //import { Label } from "@/components/ui/label";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";  
+// import { jwtDecode } from "jwt-decode";  
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 
@@ -31,8 +31,7 @@ export function LoginDialog() {
     const handleGoogleLoginSuccess = async (credentialResponse: any) => {
         try {
           // Decode the Google ID token to get user info (optional)
-          const decoded: any = jwtDecode(credentialResponse.credential);
-          console.log("Google User Info:", decoded);
+          // const decoded: any = jwtDecode(credentialResponse.credential);
     
           // Send the Google ID token to your backend for verification
           const response = await fetch("https://ids.alphagolfcharlie.dev/api/google-login", {
@@ -48,7 +47,6 @@ export function LoginDialog() {
           }
     
           const data = await response.json();
-          console.log("Backend Response:", data);
     
           // Store the backend-issued JWT
           localStorage.setItem("authToken", data.token);
