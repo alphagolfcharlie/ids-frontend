@@ -8,6 +8,7 @@ import { CrossingsTable } from "@/components/admin/crossingsTable";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EnrouteTable } from "@/components/admin/enrouteTable";
+import { RoutesTable } from "@/components/admin/routesTable";
 
 export type Crossing = {
   _id: string;
@@ -32,7 +33,7 @@ export function AdminPage() {
             </TabsList>
             <br></br>
             <TabsContent value="routing">
-              <p>Coming soon!</p>
+              <RoutesTable />
             </TabsContent>
             <TabsContent value="crossings">
               <CrossingsTable />

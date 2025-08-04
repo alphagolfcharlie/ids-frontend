@@ -142,7 +142,6 @@ export function EnrouteTable() {
     };
 
     const handleSaveEntry = (enroute: any) => {
-        console.log("Editing Enroute Entry:", enroute); // Debugging
         setEditingEnroute(enroute); // Set the enroute being edited
         setEditForm({ ...enroute }); // Initialize the edit form with the enroute's current data
         setIsDialogOpen(true); // Open the edit modal
@@ -163,10 +162,6 @@ export function EnrouteTable() {
               : `https://ids.alphagolfcharlie.dev/api/enroute`;
             const method = isEdit ? "PUT" : "POST";
     
-
-            console.log("editingEnroute", editingEnroute);
-            console.log("editForm", editForm);
-            console.log("Method:", method, "URL:", url);
         
     
             const response = await fetch(url, {
