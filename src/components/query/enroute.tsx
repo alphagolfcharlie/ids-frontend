@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination"
+import { useLocation, useNavigate } from "react-router-dom"
+
 
 export function EnrouteInput() {
   const [field, setField] = useState("")
@@ -25,9 +27,12 @@ export function EnrouteInput() {
   const currentItems = enroutes.slice(indexOfFirstItem, indexOfLastItem)
   const totalPages = Math.ceil(enroutes.length / itemsPerPage)
 
-  const fetchEnroutes = async () => {
+  const navigate = useNavigate(); // Hook to update the URL
+  const location = useLocation(); // Hook to get the current URL
+
+  const fetchEnroutes = async (fieldToFetch: string, areaToFetch: string) => {
     setCurrentPage(1)
-    if (!field) {
+    if (!fieldToFetch) {
       setError("Field is required")
       return
     }
@@ -36,15 +41,15 @@ export function EnrouteInput() {
     setError(null)
     setEnroutes([])
 
-    const query = new URLSearchParams({ field })
-    if (area) query.append("area", area)
+    const query = new URLSearchParams({ field: fieldToFetch })
+    if (area) query.append("area", areaToFetch)
 
     try {
       const response = await fetch(`https://ids.alphagolfcharlie.dev/api/enroute?${query.toString()}`)
       if (!response.ok) throw new Error("Failed to fetch enroute data")
       const data = await response.json()
       setEnroutes(data)
-      setSearchField(field)
+      setSearchField(fieldToFetch)
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -52,14 +57,34 @@ export function EnrouteInput() {
     }
   }
 
+    // Parse query parameters and populate form fields
+    useEffect(() => {
+      const params = new URLSearchParams(location.search); // Get query parameters from the URL
+      const fieldParam = params.get("field"); // Extract "field" parameter
+      const areaParam = params.get("area"); // Extract "area" parameter
+  
+      if (fieldParam) {
+        setField(fieldParam); // Populate the field input
+        setArea(areaParam || ""); // Populate the area input (if present)
+        fetchEnroutes(fieldParam, areaParam || ""); // Fetch enroutes based on the query parameters
+      }
+    }, [location.search]); // Run this effect whenever the URL changes
+  
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      // Update the URL with the new query parameters
+      const query = new URLSearchParams({ field });
+      if (area) query.append("area", area);
+      navigate(`?${query.toString()}`);
+  
+      // Fetch enroutes for the new field and area
+      fetchEnroutes(field, area);
+    };
+
   return (
     <div className="w-full max-w-sm space-y-4">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          fetchEnroutes()
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <Label htmlFor="field">Field</Label>
         <Input
           id="field"

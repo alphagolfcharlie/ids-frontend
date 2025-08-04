@@ -10,6 +10,7 @@ function App() {
 
       {/* Routes Page (renders the same HomePage component) */}
       <Route path="/routes" element={<HomePage />} />
+      <Route path="/:tab" element={<HomePage />} />
 
       {/* Admin Page */}
       <Route path="/admin" element={<AdminPage />} />
