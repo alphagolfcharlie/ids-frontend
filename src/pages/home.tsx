@@ -74,7 +74,7 @@ export function HomePage() {
         </div>
 
         <footer className="text-center text-sm text-gray-400 p-4 border-t">
-          Site by Arya Chandrasekharan. This is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use. Always double-check information with relevant SOPs and LOAs.
+          Current AIRAC: 2507. Site by Arya Chandrasekharan. This is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use. Always double-check information with relevant SOPs and LOAs.
         </footer>
       </div>
     </ThemeProvider>
