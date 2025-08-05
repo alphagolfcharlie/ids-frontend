@@ -81,7 +81,7 @@ export function CrossingsTable() {
 
     const fetchCrossings = async () => {
         try {
-        const response = await fetch("https://ids.alphagolfcharlie.dev/api/crossings", {
+        const response = await fetch("/api/crossings", {
             method: "GET",
         });
 
@@ -112,7 +112,7 @@ export function CrossingsTable() {
         }
 
         try {
-            const response = await fetch(`https://ids.alphagolfcharlie.dev/api/crossings/${id}`, {
+            const response = await fetch(`/api/crossings/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`, // Include the JWT token in the Authorization header
@@ -160,8 +160,8 @@ export function CrossingsTable() {
         
         
             const url = editingCrossing
-            ? `https://ids.alphagolfcharlie.dev/api/crossings/${editingCrossing._id}` // PUT for editing
-            : `https://ids.alphagolfcharlie.dev/api/crossings`; // POST for creating
+            ? `/api/crossings/${editingCrossing._id}` // PUT for editing
+            : `/api/crossings`; // POST for creating
     
           const method = editingCrossing ? "PUT" : "POST"; // Determine the HTTP method
     

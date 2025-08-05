@@ -34,7 +34,7 @@ export function LoginDialog() {
           // const decoded: any = jwtDecode(credentialResponse.credential);
     
           // Send the Google ID token to your backend for verification
-          const response = await fetch("https://ids.alphagolfcharlie.dev/api/google-login", {
+          const response = await fetch("/api/google-login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

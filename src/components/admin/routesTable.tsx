@@ -81,7 +81,7 @@ export type Route = {
 
     const fetchRoute = async () => {
         try {
-        const response = await fetch("https://ids.alphagolfcharlie.dev/api/routes", {
+        const response = await fetch("/api/routes", {
             method: "GET",
         });
 
@@ -113,7 +113,7 @@ export type Route = {
 
 
         try {
-            const response = await fetch(`https://ids.alphagolfcharlie.dev/api/routes/${id}`, {
+            const response = await fetch(`/api/routes/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`, // Include the JWT token in the Authorization header
@@ -162,8 +162,8 @@ export type Route = {
         
             const isEdit = editingRoute && editingRoute._id && editingRoute._id.trim() !== "";
             const url = isEdit
-              ? `https://ids.alphagolfcharlie.dev/api/routes/${editingRoute._id}`
-              : `https://ids.alphagolfcharlie.dev/api/routes`;
+              ? `/api/routes/${editingRoute._id}`
+              : `/api/routes`;
             const method = isEdit ? "PUT" : "POST";
     
 

@@ -32,7 +32,7 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
 
     try {
       const res = await fetch(
-        `https://ids.alphagolfcharlie.dev/api/fix?fixes=${fixes.join(",")}`
+        `/api/fix?fixes=${fixes.join(",")}`
       )
       const data: Record<string, FixData> = await res.json()
 
@@ -144,7 +144,7 @@ async function expandProcedure(fixes: string[]): Promise<string[]> {
       const sidCode = `${current}.${sidTransition}`
 
       try {
-        const res = await fetch(`https://ids.alphagolfcharlie.dev/api/sid?code=${sidCode}`)
+        const res = await fetch(`/api/sid?code=${sidCode}`)
         const data = await res.json()
         expanded.push(...(data.waypoints || [current]))
       } catch {
@@ -162,7 +162,7 @@ async function expandProcedure(fixes: string[]): Promise<string[]> {
 
       expanded.pop()
       try {
-        const res = await fetch(`https://ids.alphagolfcharlie.dev/api/star?code=${starCode}`)
+        const res = await fetch(`/api/star?code=${starCode}`)
         const data = await res.json()
         expanded.push(...(data.waypoints || [current]))
       } catch {
@@ -182,7 +182,7 @@ async function expandProcedure(fixes: string[]): Promise<string[]> {
 
       try {
         const res = await fetch(
-          `https://ids.alphagolfcharlie.dev/api/airway?id=${current}&from=${prev}&to=${next}`
+          `/api/airway?id=${current}&from=${prev}&to=${next}`
         )
         const data = await res.json()
 

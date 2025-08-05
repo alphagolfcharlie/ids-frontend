@@ -45,7 +45,7 @@ export function EnrouteInput() {
     if (area) query.append("area", areaToFetch)
 
     try {
-      const response = await fetch(`https://ids.alphagolfcharlie.dev/api/enroute?${query.toString()}`)
+      const response = await fetch(`/api/enroute?${query.toString()}`)
       if (!response.ok) throw new Error("Failed to fetch enroute data")
       const data = await response.json()
       setEnroutes(data)

@@ -21,7 +21,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
 
     const fetchAircraft = async () => {
       try {
-        const res = await fetch("https://ids.alphagolfcharlie.dev/api/aircraft")
+        const res = await fetch("/api/aircraft")
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
         const data: Aircraft[] = await res.json()
