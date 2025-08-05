@@ -325,6 +325,14 @@ export type Route = {
             }
             className="w-64"
             />
+            <Input 
+            placeholder="Filter by destination..."
+            value={(table.getColumn("destination")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+                table.getColumn("destination")?.setFilterValue(event.target.value)
+            }
+            className="w-64"
+            />
         </div>
 
         {/* Columns Dropdown */}
