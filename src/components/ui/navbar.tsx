@@ -7,7 +7,6 @@ import {
     NavigationMenuTrigger,
   } from "@/components/ui/navigation-menu";
   import { ModeToggle } from "./modeToggle";
-
   import { LoginDialog } from "./login";
 
   export function Navbar() {
@@ -16,8 +15,11 @@ import {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>External Links</NavigationMenuTrigger>
+              <NavigationMenuTrigger>Links</NavigationMenuTrigger>
               <NavigationMenuContent>
+                <NavigationMenuLink href="/">
+                  Home
+                </NavigationMenuLink>
                 <NavigationMenuLink href="https://clevelandcenter.org/splits" target="_blank">
                   Splits
                 </NavigationMenuLink>
