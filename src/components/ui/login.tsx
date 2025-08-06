@@ -28,77 +28,96 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function LoginDialog() {
-    const navigate = useNavigate();
-    const location = useLocation(); // Get the current URL
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
-    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // State to control the alert dialog
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
-  
-    useEffect(() => {
-      // Check if the user is logged in by verifying the presence of the token
-      const token = localStorage.getItem("authToken");
-      setIsLoggedIn(!!token); // Set to true if token exists, false otherwise
-    }, []);
-  
-    const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-      try {
-        const response = await fetch("/api/google-login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: credentialResponse.credential }),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to log in");
-        }
-  
-        const data = await response.json();
-  
-        // Store the backend-issued JWT
-        localStorage.setItem("authToken", data.token);
-  
-        const decoded: any = jwtDecode(data.token);
-        const expirationTime = decoded.exp * 1000;
-  
-        // Set a timer to log out the user when the token expires
-        const timeUntilExpiration = expirationTime - Date.now();
-        setTimeout(() => {
-          alert("Your session has expired. Please log in again.");
-          handleLogout();
-        }, timeUntilExpiration);
-  
-        // Update login state
+  // Schedule automatic logout
+  const scheduleLogout = (expirationTime: number) => {
+    const timeUntilExpiration = expirationTime - Date.now();
+
+    if (timeUntilExpiration > 0) {
+      setTimeout(() => {
+        alert("Your session has expired. Please log in again.");
+        handleLogout();
+      }, timeUntilExpiration);
+    } else {
+      handleLogout();
+    }
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("tokenExpiration");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
+  // Check login status on load
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const expiration = localStorage.getItem("tokenExpiration");
+
+    if (token && expiration) {
+      const expirationTime = parseInt(expiration, 10);
+
+      if (Date.now() >= expirationTime) {
+        handleLogout(); // Token expired
+      } else {
         setIsLoggedIn(true);
-  
-        // Redirect to the admin page
-        navigate("/admin");
-      } catch (err) {
-        console.error("Login failed:", err);
-        alert("Login failed. Please try again.");
+        scheduleLogout(expirationTime);
       }
-    };
-  
-    const handleGoogleLoginError = () => {
-      console.error("Login Failed");
-    };
-  
-    const handleLogout = () => {
-      localStorage.removeItem("authToken"); // Clear the token
-      setIsLoggedIn(false); // Update login state
-      navigate("/"); // Redirect to the home page
-    };
-  
-    const handleAdminAccess = () => {
-      if (isLoggedIn) {
-        navigate("/admin"); // Redirect to the admin panel if logged in
+    }
+  }, []);
+
+  // Handle successful Google login
+  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+    try {
+      const response = await fetch("/api/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log in");
       }
-    };
-  
-    const handleHomeAccess = () => {
-      navigate("/"); // Redirect to the home page
-    };
+
+      const data = await response.json();
+      const decoded: any = jwtDecode(data.token);
+      const expirationTime = decoded.exp * 1000; // in ms
+
+      // Store token and expiration
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("tokenExpiration", expirationTime.toString());
+
+      // Schedule logout
+      scheduleLogout(expirationTime);
+
+      // Update state
+      setIsLoggedIn(true);
+      navigate("/admin");
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Login failed. Please try again.");
+    }
+  };
+
+  const handleGoogleLoginError = () => {
+    console.error("Login Failed");
+  };
+
+  const handleAdminAccess = () => {
+    if (isLoggedIn) navigate("/admin");
+  };
+
+  const handleHomeAccess = () => {
+    navigate("/");
+  };
   
     return (
       <Dialog>
