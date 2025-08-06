@@ -251,7 +251,7 @@ export function CrossingsTable() {
               const crossing = row.original;
           
               return (
-                <div className="flex gap-2">
+                <div className="flex gap-2 ml-auto justify-end">
                   <Button
                     type="button"
                     variant="outline"
@@ -316,6 +316,14 @@ export function CrossingsTable() {
             value={(table.getColumn("destination")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
                 table.getColumn("destination")?.setFilterValue(event.target.value)
+            }
+            className="w-64"
+            />
+            <Input
+            placeholder="Filter by ARTCC..."
+            value={(table.getColumn("artcc")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+                table.getColumn("artcc")?.setFilterValue(event.target.value)
             }
             className="w-64"
             />
@@ -408,46 +416,90 @@ export function CrossingsTable() {
     </div>
 
     <div className="flex items-center gap-2">
-        <span>Rows per page:</span>
-        <Select
-            value={String(table.getState().pagination.pageSize)}
-            onValueChange={(value) => table.setPageSize(Number(value))}
-        >
-            <SelectTrigger className="w-[80px]">
-            <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-            {[10, 20, 30, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={String(pageSize)}>
-                {pageSize}
-                </SelectItem>
-            ))}
-            </SelectContent>
-        </Select>
-        </div>
+      <span>Rows per page:</span>
+      <Select
+        value={String(table.getState().pagination.pageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
+      >
+        <SelectTrigger className="w-[80px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {[10, 20, 30, 50].map((pageSize) => (
+            <SelectItem key={pageSize} value={String(pageSize)}>
+              {pageSize}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
+  </div>
 
-    {/* Right: Pagination controls */}
-    <div className="flex items-center space-x-2">
-        <Button
-        variant="outline"
+  {/* Right: Delete + Pagination Controls */}
+  <div className="flex items-center space-x-2">
+    {table.getFilteredSelectedRowModel().rows.length > 0 && (
+      <Button
+        variant="destructive"
         size="sm"
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        >
-        Previous
-        </Button>
-        <Button
-        variant="outline"
-        size="sm"
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        >
-        Next
-        </Button>
-    </div>
-    </div>
+        onClick={async () => {
+          if (
+            window.confirm(
+              `Are you sure you want to delete ${table.getFilteredSelectedRowModel().rows.length} selected crossings?`
+            )
+          ) {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+              alert("You are not authorized to perform this action.");
+              return;
+            }
 
+            const selectedRows = table.getFilteredSelectedRowModel().rows;
+
+            try {
+              for (const row of selectedRows) {
+                const crossingId = row.original._id;
+                await fetch(
+                  `/api/crossings/${crossingId}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+              }
+
+              alert("Selected crossings deleted.");
+              fetchCrossings(); // Refresh
+              table.resetRowSelection(); // Clear selection
+            } catch (err) {
+              alert("Error deleting selected crossings.");
+              console.error(err);
+            }
+          }
+        }}
+      >
+        Delete Selected
+      </Button>
+    )}
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => table.previousPage()}
+      disabled={!table.getCanPreviousPage()}
+    >
+      Previous
+    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => table.nextPage()}
+      disabled={!table.getCanNextPage()}
+    >
+      Next
+    </Button>
+  </div>
+</div>
         </>
       )}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

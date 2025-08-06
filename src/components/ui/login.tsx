@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 //import { Label } from "@/components/ui/label";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";  
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -30,6 +31,8 @@ export function LoginDialog() {
     const navigate = useNavigate();
     const location = useLocation(); // Get the current URL
     const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // State to control the alert dialog
+
   
     useEffect(() => {
       // Check if the user is logged in by verifying the presence of the token
@@ -129,12 +132,41 @@ export function LoginDialog() {
 
           {isLoggedIn && (
             // Always show "Log Out" button if logged in
-            <Button
-              variant="destructive"
-              onClick={handleLogout}
-            >
-              Log Out
-            </Button>
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsAlertDialogOpen(true)} // Open the alert dialog
+                >
+                  Log Out
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to log out? You will need to log in again to access the admin panel.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAlertDialogOpen(false)} // Close the dialog
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      setIsAlertDialogOpen(false); // Close the dialog
+                      handleLogout(); // Perform logout
+                    }}
+                  >
+                    Log Out
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
   

@@ -247,7 +247,7 @@ export function EnrouteTable() {
               const enroute = row.original;
           
               return (
-                <div className="flex gap-2">
+                <div className="flex gap-2 ml-auto justify-end">
                   <Button
                     type="button"
                     variant="outline"
@@ -312,6 +312,14 @@ export function EnrouteTable() {
             value={(table.getColumn("field")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
                 table.getColumn("field")?.setFilterValue(event.target.value)
+            }
+            className="w-64"
+            />
+            <Input
+            placeholder="Filter by area..."
+            value={(table.getColumn("areas")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+                table.getColumn("areas")?.setFilterValue(event.target.value)
             }
             className="w-64"
             />
@@ -396,53 +404,98 @@ export function EnrouteTable() {
             </Table>
           </div>
           <div className="flex items-center justify-between py-4 flex-wrap gap-4">
-  {/* Left: Selected row info and rows per page */}
-  <div className="flex items-center gap-6 text-sm text-muted-foreground">
+    {/* Left: Selected row info and rows per page */}
+    <div className="flex items-center gap-6 text-sm text-muted-foreground">
     <div>
       {table.getFilteredSelectedRowModel().rows.length} of{" "}
       {table.getFilteredRowModel().rows.length} row(s) selected.
     </div>
 
     <div className="flex items-center gap-2">
-        <span>Rows per page:</span>
-        <Select
-            value={String(table.getState().pagination.pageSize)}
-            onValueChange={(value) => table.setPageSize(Number(value))}
-        >
-            <SelectTrigger className="w-[80px]">
-            <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-            {[10, 20, 30, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={String(pageSize)}>
-                {pageSize}
-                </SelectItem>
-            ))}
-            </SelectContent>
-        </Select>
-        </div>
+      <span>Rows per page:</span>
+      <Select
+        value={String(table.getState().pagination.pageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
+      >
+        <SelectTrigger className="w-[80px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {[10, 20, 30, 50].map((pageSize) => (
+            <SelectItem key={pageSize} value={String(pageSize)}>
+              {pageSize}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
+  </div>
 
-    {/* Right: Pagination controls */}
+    {/* Right: Delete + Pagination Controls */}
     <div className="flex items-center space-x-2">
+      {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <Button
+          variant="destructive"
+          size="sm"
+          onClick={async () => {
+            if (
+              window.confirm(
+                `Are you sure you want to delete ${table.getFilteredSelectedRowModel().rows.length} selected enroutes?`
+              )
+            ) {
+              const token = localStorage.getItem("authToken");
+              if (!token) {
+                alert("You are not authorized to perform this action.");
+                return;
+              }
+
+              const selectedRows = table.getFilteredSelectedRowModel().rows;
+
+              try {
+                for (const row of selectedRows) {
+                  const enrouteId = row.original._id;
+                  await fetch(
+                    `/api/enroute/${enrouteId}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    }
+                  );
+                }
+
+                alert("Selected enroutes deleted.");
+                fetchEnroute(); // Refresh
+                table.resetRowSelection(); // Clear selection
+              } catch (err) {
+                alert("Error deleting selected enroutes.");
+                console.error(err);
+              }
+            }
+          }}
+        >
+          Delete Selected
+        </Button>
+      )}
+      <Button
         variant="outline"
         size="sm"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
-        >
+      >
         Previous
-        </Button>
-        <Button
+      </Button>
+      <Button
         variant="outline"
         size="sm"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
-        >
+      >
         Next
-        </Button>
+      </Button>
     </div>
-    </div>
+  </div>
 
         </>
       )}

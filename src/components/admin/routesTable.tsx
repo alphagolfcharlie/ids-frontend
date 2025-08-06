@@ -257,7 +257,7 @@ export type Route = {
               const route = row.original;
           
               return (
-                <div className="flex gap-2">
+                <div className="flex gap-2 ml-auto justify-end">
                   <Button
                     type="button"
                     variant="outline"
@@ -422,45 +422,90 @@ export type Route = {
     </div>
 
     <div className="flex items-center gap-2">
-        <span>Rows per page:</span>
-        <Select
-            value={String(table.getState().pagination.pageSize)}
-            onValueChange={(value) => table.setPageSize(Number(value))}
-        >
-            <SelectTrigger className="w-[80px]">
-            <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-            {[10, 20, 30, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={String(pageSize)}>
-                {pageSize}
-                </SelectItem>
-            ))}
-            </SelectContent>
-        </Select>
-        </div>
+      <span>Rows per page:</span>
+      <Select
+        value={String(table.getState().pagination.pageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
+      >
+        <SelectTrigger className="w-[80px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {[10, 20, 30, 50].map((pageSize) => (
+            <SelectItem key={pageSize} value={String(pageSize)}>
+              {pageSize}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
+  </div>
 
-    {/* Right: Pagination controls */}
+    {/* Right: Delete + Pagination Controls */}
     <div className="flex items-center space-x-2">
+      {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <Button
+          variant="destructive"
+          size="sm"
+          onClick={async () => {
+            if (
+              window.confirm(
+                `Are you sure you want to delete ${table.getFilteredSelectedRowModel().rows.length} selected routes?`
+              )
+            ) {
+              const token = localStorage.getItem("authToken");
+              if (!token) {
+                alert("You are not authorized to perform this action.");
+                return;
+              }
+
+              const selectedRows = table.getFilteredSelectedRowModel().rows;
+
+              try {
+                for (const row of selectedRows) {
+                  const routeId = row.original._id;
+                  await fetch(
+                    `/api/routes/${routeId}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    }
+                  );
+                }
+
+                alert("Selected routes deleted.");
+                fetchRoute(); // Refresh
+                table.resetRowSelection(); // Clear selection
+              } catch (err) {
+                alert("Error deleting selected routes.");
+                console.error(err);
+              }
+            }
+          }}
+        >
+          Delete Selected
+        </Button>
+      )}
+      <Button
         variant="outline"
         size="sm"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
-        >
+      >
         Previous
-        </Button>
-        <Button
+      </Button>
+      <Button
         variant="outline"
         size="sm"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
-        >
+      >
         Next
-        </Button>
+      </Button>
     </div>
-    </div>
+  </div>
 
         </>
       )}
