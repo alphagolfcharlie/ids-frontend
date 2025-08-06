@@ -17,9 +17,6 @@ import {
             <NavigationMenuItem>
               <NavigationMenuTrigger>Links</NavigationMenuTrigger>
               <NavigationMenuContent>
-                <NavigationMenuLink href="/">
-                  Home
-                </NavigationMenuLink>
                 <NavigationMenuLink href="https://clevelandcenter.org/splits" target="_blank">
                   Splits
                 </NavigationMenuLink>
