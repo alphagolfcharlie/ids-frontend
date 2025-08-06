@@ -11,6 +11,7 @@ import {
 
   export function Navbar() {
     return (
+      <div>
       <div className="p-4 border-b flex items-center justify-between z-10 bg-background sticky top-0">
         <NavigationMenu>
           <NavigationMenuList>
@@ -39,5 +40,10 @@ import {
           <ModeToggle />
         </div>
       </div>
+        <div className="bg-indigo-700 text-white text-center py-2">
+        NOTAM - enroute crossings are currently being added in full detail. They may not be fully accurate right now. 
+        </div>
+      </div>
+
     );
   }
