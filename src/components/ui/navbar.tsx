@@ -41,7 +41,7 @@ import {
         </div>
       </div>
         <div className="bg-indigo-700 text-white text-center py-2">
-        NOTAM - some FAA prefroutes are still on AIRAC 2507 - always double-check the currency of information.
+        NOTAM - 'external LOAs' now contains crossing restrictions as well as LOA mandated route strings.
         </div>
       </div>
 

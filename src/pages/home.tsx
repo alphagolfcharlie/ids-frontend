@@ -46,7 +46,7 @@ export function HomePage() {
             }}>
               <TabsList>
                 <TabsTrigger value="routing">Clearance Routing</TabsTrigger>
-                <TabsTrigger value="crossings">External LOAS</TabsTrigger>
+                <TabsTrigger value="crossings">External LOAs</TabsTrigger>
                 <TabsTrigger value="internalcrossings">Internal LOAs</TabsTrigger>
               </TabsList>
               <br />
