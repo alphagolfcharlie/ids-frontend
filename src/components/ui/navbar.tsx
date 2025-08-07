@@ -41,7 +41,7 @@ import {
         </div>
       </div>
         <div className="bg-indigo-700 text-white text-center py-2">
-        NOTAM - enroute crossings are currently being added in full detail. They may not be fully accurate right now. 
+        NOTAM - some FAA prefroutes are still on AIRAC 2507 - always double-check the currency of information.
         </div>
       </div>
 
