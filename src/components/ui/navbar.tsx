@@ -41,8 +41,7 @@ import {
         </div>
       </div>
         <div className="bg-indigo-700 text-white text-center py-2">
-        NOTAM - 'external LOAs' now contains crossing restrictions as well as LOA mandated route strings.
-        </div>
+        NOTAM: This is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use. Always double-chceck info with relevant SOPs/LOAs.</div>
       </div>
 
     );
