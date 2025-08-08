@@ -15,6 +15,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
+
 import { flexRender } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 "use client";
@@ -77,6 +86,10 @@ export type Route = {
     const [editForm, setEditForm] = useState<any | null>(null); // State for the edit form data 
     const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog visibility
 
+    const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // State to control the alert dialog
+    const [alertMessage, setAlertMessage] = useState(""); // State to store the alert message
+
+
     // Fetch routes
 
     const fetchRoute = async () => {
@@ -103,14 +116,33 @@ export type Route = {
         const token = localStorage.getItem("authToken"); // Retrieve the JWT token
 
         if (!token) {
-            alert("You are not authorized to perform this action.");
-            return;
+          setAlertMessage("You are not authorized to perform this action.");
+          setIsAlertDialogOpen(true); // Open the alert dialog
+          return;
         }
 
-        if (!window.confirm("Are you sure you want to delete this route?")) {
-            return;
-        }
+        setAlertMessage("Are you sure you want to delete this route?");
+        setIsAlertDialogOpen(true);
 
+        // Wait for user confirmation
+        const confirmed = await new Promise<boolean>((resolve) => {
+          const handleConfirm = () => resolve(true);
+          const handleCancel = () => resolve(false);
+
+          setAlertMessage("Are you sure you want to delete this route?");
+          setIsAlertDialogOpen(true);
+
+          // Attach handlers to buttons in the dialog
+          const okButton = document.getElementById("ok-button");
+          const cancelButton = document.getElementById("cancel-button");
+
+          if (okButton) okButton.addEventListener("click", handleConfirm);
+          if (cancelButton) cancelButton.addEventListener("click", handleCancel);
+        });
+
+        if (!confirmed) {
+          return; // User canceled the action
+        }
 
         try {
             const response = await fetch(`/api/routes/${id}`, {
@@ -128,8 +160,8 @@ export type Route = {
             setRoutes((prevRoutes) => prevRoutes.filter((route) => route._id !== id));
             alert("Route deleted successfully.");
         } catch (err) {
-            alert("Error deleting route: " + (err as Error).message);
-        }
+            setAlertMessage("Failed to delete route. Please try again.");
+            setIsAlertDialogOpen(true);        }
         };
 
     // Open the dialog for creating a new entry
@@ -301,7 +333,32 @@ export type Route = {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-
+    <div>
+        {/* Alert Dialog */}
+        <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Alert</AlertDialogTitle>
+              <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button
+                id="cancel-button"
+                variant="outline"
+                onClick={() => setIsAlertDialogOpen(false)} // Close the dialog
+              >
+                Cancel
+              </Button>
+              <Button
+                id="ok-button"
+                variant="destructive"
+                onClick={() => setIsAlertDialogOpen(false)} // Close the dialog
+              >
+                OK
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
     
 
       {loading && <p>Loading route entries...</p>}
@@ -574,7 +631,7 @@ export type Route = {
         </Dialog>
 
       {!loading && routes.length === 0 && <p>No routes found.</p>}
-
+      </div>
     </ThemeProvider>
   );
 }
