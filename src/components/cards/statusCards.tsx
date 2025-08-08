@@ -59,7 +59,7 @@ export function AirportStatusCards() {
         <div className="h-full flex flex-col">
           <ScrollArea className="flex-1 min-h-0 pr-4">
             <div className="flex flex-col gap-4">
-              {[...Array(3)].map((_, i) => (
+              {[...Array(4)].map((_, i) => (
                 <Card key={i}>
                   <CardHeader>
                     <Skeleton className="h-6 w-24" />
