@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { ReadMore } from "@/components/cards/readMore"
+import { Skeleton } from "../ui/skeleton"
 
 type AirportInfo = {
     icao: string
@@ -53,8 +54,35 @@ export function AirportStatusCards() {
     }, [])
     
   
-    if (loading) return <p>Loading airport data...</p>
-    if (error) return <p className="text-red-500">{error}</p>
+    if (loading) {
+      return (
+        <div className="h-full flex flex-col">
+          <ScrollArea className="flex-1 min-h-0 pr-4">
+            <div className="flex flex-col gap-4">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-24" />
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <div>
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </div>
+                    <div>
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      )
+    }    if (error) return <p className="text-red-500">{error}</p>
   
     return (
       <div className="h-full flex flex-col">
