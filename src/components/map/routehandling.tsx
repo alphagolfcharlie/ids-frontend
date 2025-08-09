@@ -55,7 +55,8 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
             .bindTooltip(fix, {
               permanent: false,
               direction: "right",
-              opacity: 0.9
+              opacity: 0.9,
+              pane: "tooltipPane" // ensures it uses that pane
             })
 
           markers.push(marker)

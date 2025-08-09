@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.1.1] - 2025-10-08
 ### Fixed
-- Issue where TRACONs would appear green instead of blue
+- Issue where TRACONs would appear blue instead of green
 - Issue where aircraft would be unclickable after being rendered under other layers
 - Issue where route markers would be hidden under other layers
+- Issue where route marker tooltips would be hidden under other layers
 
 ## [v1.1.0] - 2025-09-08
 ### Added

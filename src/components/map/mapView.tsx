@@ -137,6 +137,8 @@ export function MapView() {
 
     map.createPane("routePane")
     map.getPane("routePane")!.style.zIndex = "1000" // higher than aircraft
+
+    map.getPane("tooltipPane")!.style.zIndex = "2000" // or higher than routePane
     
 
     const tileLayer = L.tileLayer(getTileUrl(theme), {
