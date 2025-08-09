@@ -94,7 +94,7 @@ export function MapView() {
         const activeTraconLayer = L.geoJSON(traconActive, {
           pane: "traconPane",
           style: {
-            color: "#0000ff",
+            color: "#00cc44",
             weight: 1.5,
             fillOpacity: 0.2
           }
