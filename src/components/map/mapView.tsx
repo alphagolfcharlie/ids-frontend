@@ -44,13 +44,11 @@ export function MapView() {
         // Determine active ARTCCs and TRACONs
         const activeArtccs = new Set(
           controllerData.controllers
-            .filter((ctrl: any) => ctrl.isActive && !ctrl.isObserver)
             .map((ctrl: any) => normalize(ctrl.artccId))
         )
 
         const activeTracons = new Set(
           controllerData.tracon
-            .filter((ctrl: any) => ctrl.isActive && !ctrl.isObserver)
             .map((ctrl: any) => normalize(ctrl.primaryFacilityId))
         )
 

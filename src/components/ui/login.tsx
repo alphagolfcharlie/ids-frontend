@@ -118,7 +118,7 @@ export function LoginDialog() {
   const handleHomeAccess = () => {
     navigate("/");
   };
-  
+
     return (
       <Dialog>
         <form>
