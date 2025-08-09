@@ -17,7 +17,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
   useEffect(() => {
     if (!map) return
 
-    const aircraftLayerGroup = L.layerGroup().addTo(map)
+    const aircraftLayerGroup = L.layerGroup([], { pane: "aircraftPane" }).addTo(map)
 
     const fetchAircraft = async () => {
       try {
@@ -42,6 +42,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
             }
 
             const circle = L.circle([aircraft.lat, aircraft.lon], {
+              pane: "aircraftPane", // <- important!
               color: circleColor,
               fillColor: "#30f",
               fillOpacity: 0.5,

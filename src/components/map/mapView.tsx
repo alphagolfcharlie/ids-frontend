@@ -58,6 +58,7 @@ export function MapView() {
         const artccInactive = artccFeatures.filter(f => !activeArtccs.has(normalize(f.properties?.id)))
 
         const inactiveArtccLayer = L.geoJSON(artccInactive, {
+          pane: "artccPane",
           style: {
             color: "#808080",
             weight: 1,
@@ -66,6 +67,7 @@ export function MapView() {
         })
 
         const activeArtccLayer = L.geoJSON(artccActive, {
+          pane: "artccPane",
           style: {
             color: "#00cc44",
             weight: 1,
@@ -81,6 +83,7 @@ export function MapView() {
         const traconInactive = traconFeatures.filter(f => !activeTracons.has(normalize(f.properties?.id)))
 
         const inactiveTraconLayer = L.geoJSON(traconInactive, {
+          pane: "traconPane",
           style: {
             color: "#808080",
             weight: 1,
@@ -89,8 +92,9 @@ export function MapView() {
         })
 
         const activeTraconLayer = L.geoJSON(traconActive, {
+          pane: "traconPane",
           style: {
-            color: "#00cc44",
+            color: "#0000ff",
             weight: 1.5,
             fillOpacity: 0.2
           }
@@ -119,6 +123,17 @@ export function MapView() {
   useEffect(() => {
     const map = L.map("map").setView([41.5346, -80.6708], 6)
     mapRef.current = map
+
+        // --- Create panes with custom z-index ---
+
+    map.createPane("traconPane")
+    map.getPane("traconPane")!.style.zIndex = "300" // sectors below aircraft
+
+    map.createPane("artccPane")
+    map.getPane("artccPane")!.style.zIndex = "400" // sectors below aircraft
+
+    map.createPane("aircraftPane")
+    map.getPane("aircraftPane")!.style.zIndex = "650" // higher = on top
 
     const tileLayer = L.tileLayer(getTileUrl(theme), {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
