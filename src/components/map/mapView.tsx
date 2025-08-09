@@ -135,6 +135,10 @@ export function MapView() {
     map.createPane("aircraftPane")
     map.getPane("aircraftPane")!.style.zIndex = "650" // higher = on top
 
+    map.createPane("routePane")
+    map.getPane("routePane")!.style.zIndex = "1000" // higher than aircraft
+    
+
     const tileLayer = L.tileLayer(getTileUrl(theme), {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
       subdomains: "abcd",

@@ -45,6 +45,7 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
           coords.push(latlng)
 
           const marker = L.circleMarker(latlng, {
+            pane: "routePane",
             radius: 6,
             color,
             fillColor: color,
@@ -65,6 +66,7 @@ export function useRouteHandling(map: L.Map | null, updateList: () => void) {
 
       if (coords.length > 1) {
         const polyline = L.polyline(coords, {
+          pane: "routePane",
           color,
           weight: 3,
           opacity: 0.8
