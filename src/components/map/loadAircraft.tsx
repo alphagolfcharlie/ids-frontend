@@ -55,6 +55,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
                 {
                   sticky: true,
                   direction: "top",
+                  pane: "tooltipPane", // ensures it uses the tooltip pane
                 }
               )
               .bindPopup(`
