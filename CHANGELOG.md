@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Issue where aircraft would be unclickable after being rendered under other layers
 - Issue where route markers would be hidden under other layers
 - Issue where route marker tooltips would be hidden under other layers
+- Issue where flight plan tooltips would be under route markers
+
 
 ## [v1.1.0] - 2025-09-08
 ### Added

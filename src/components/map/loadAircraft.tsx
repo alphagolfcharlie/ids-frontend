@@ -18,7 +18,11 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
     if (!map) return
 
     const aircraftLayerGroup = L.layerGroup([], { pane: "aircraftPane" }).addTo(map)
-
+    if (!map.getPane("aircraftTooltipPane")) {
+      map.createPane("aircraftTooltipPane");
+      map.getPane("aircraftTooltipPane")!.style.zIndex = "4000";
+      map.getPane("aircraftTooltipPane")!.style.pointerEvents = "none";
+    }
     const fetchAircraft = async () => {
       try {
         const res = await fetch("/api/aircraft")
@@ -55,7 +59,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
                 {
                   sticky: true,
                   direction: "top",
-                  pane: "tooltipPane", // ensures it uses the tooltip pane
+                  pane: "aircraftTooltipPane",
                 }
               )
               .bindPopup(`
