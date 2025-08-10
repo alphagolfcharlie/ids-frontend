@@ -68,7 +68,7 @@ export function HomePage() {
             </AspectRatio>
           </div>
 
-          <div className="w-full md:w-1/4 border-r px-4 py-2 flex flex-col h-auto md:h-[calc(100vh-64px)] overflow-auto">
+          <div className="w-full md:w-1/4 border-r px-4 py-6 flex flex-col h-auto md:h-[calc(100vh-64px)] overflow-auto">
             <AirportStatusCards />
           </div>
         </div>

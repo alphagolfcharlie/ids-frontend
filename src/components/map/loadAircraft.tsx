@@ -11,26 +11,26 @@ type Aircraft = {
   route: string
 }
 
-const ZOB_AIRPORTS = ["KBUF", "KCLE", "KDTW", "KPIT"]
+const ZOB_AIRPORTS = ["KBUF", "KCLE", "KDTW", "KPIT", "KROC"]
 
-export function LoadAircraft({ map }: { map: L.Map | null }) {
+export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: number }) {
   useEffect(() => {
     if (!map) return
 
     const aircraftLayerGroup = L.layerGroup([], { pane: "aircraftPane" }).addTo(map)
+
     if (!map.getPane("aircraftTooltipPane")) {
-      map.createPane("aircraftTooltipPane");
-      map.getPane("aircraftTooltipPane")!.style.zIndex = "4000";
-      map.getPane("aircraftTooltipPane")!.style.pointerEvents = "none";
+      map.createPane("aircraftTooltipPane")
+      map.getPane("aircraftTooltipPane")!.style.zIndex = "4000"
+      map.getPane("aircraftTooltipPane")!.style.pointerEvents = "none"
     }
+
     const fetchAircraft = async () => {
       try {
-        const res = await fetch("/api/aircraft")
+        const res = await fetch(`/api/aircraft?radius=${radius}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
         const data: Aircraft[] = await res.json()
-
-        // Clear existing aircraft markers
         aircraftLayerGroup.clearLayers()
 
         data.forEach((aircraft) => {
@@ -46,7 +46,7 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
             }
 
             const circle = L.circle([aircraft.lat, aircraft.lon], {
-              pane: "aircraftPane", // <- important!
+              pane: "aircraftPane",
               color: circleColor,
               fillColor: "#30f",
               fillOpacity: 0.5,
@@ -79,15 +79,15 @@ export function LoadAircraft({ map }: { map: L.Map | null }) {
       }
     }
 
-    fetchAircraft() // initial fetch
-    const intervalId = setInterval(fetchAircraft, 60 * 1000) // every 1 minute
+    fetchAircraft() // immediate fetch on mount or radius change
+    const intervalId = setInterval(fetchAircraft, 60 * 1000) // refresh every minute
 
     return () => {
       clearInterval(intervalId)
       aircraftLayerGroup.clearLayers()
       map.removeLayer(aircraftLayerGroup)
     }
-  }, [map])
+  }, [map, radius]) // radius in dependencies
 
   return null
 }

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Slider } from "@/components/ui/slider"
 import { useTheme } from "@/components/theme-provider"
 import L from "leaflet"
 import { ShowRoutes } from "./disproutes"
@@ -12,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 export function MapView() {
   const { theme } = useTheme()
@@ -25,6 +28,23 @@ export function MapView() {
 
   const artccLayerRef = useRef<L.LayerGroup | null>(null)
   const traconLayerRef = useRef<L.LayerGroup | null>(null)
+
+  // Radius states
+  const [radius, setRadius] = useState<number>(400) // active live radius (NM)
+  const [pendingRadius, setPendingRadius] = useState<number>(radius) // slider draft  // Radius states
+
+  const [open, setOpen] = useState(false) // Dialog open state
+
+  function onConfirm() {
+    setRadius(pendingRadius)
+    setOpen(false)  // <-- close dialog here
+  }
+  
+  function onDisregard() {
+    setPendingRadius(radius)
+    setOpen(false)  // <-- close dialog here
+  }
+
 
   // Helper to normalize IDs
   const normalize = (id: string | undefined) =>
@@ -201,7 +221,35 @@ export function MapView() {
 
   return (
     <div className="relative z-0">
-      <div className="absolute top-4 right-4 z-[1000]">
+      <div className="absolute top-4 right-4 z-[1000] flex gap-2">
+        {/* Aircraft Controls Dialog */}
+        <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+            <Button>Aircraft Controls</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Aircraft Controls</DialogTitle>
+              <DialogDescription className="text-gray-500">Includes TMU tools (coming soon)</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <p className="font-medium">Radius around DJB VOR to display aircraft: {pendingRadius} NM</p>
+              <Slider
+                min={400}
+                max={1000}
+                step={50}
+                value={[pendingRadius]}
+                onValueChange={(val) => setPendingRadius(val[0])}
+              />
+              <div className="flex gap-2">
+              <Button onClick={onConfirm}>Confirm Changes</Button>
+              <Button onClick={onDisregard} variant="destructive">Discard Changes</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Map Layers Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button>Map Layers</Button>
@@ -233,7 +281,7 @@ export function MapView() {
 
       {mapReady && mapRef.current && (
         <>
-          {showTraffic && <LoadAircraft map={mapRef.current} />}
+          {showTraffic && <LoadAircraft map={mapRef.current} radius={radius} />}
           <div className="mt-6">
             <ShowRoutes map={mapRef.current} />
           </div>
@@ -241,6 +289,7 @@ export function MapView() {
       )}
     </div>
   )
+
 }
 
 function getTileUrl(theme: string | undefined) {
