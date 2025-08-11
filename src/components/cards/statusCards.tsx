@@ -45,7 +45,7 @@ export function AirportStatusCards() {
       fetchAirportInfo()
     
       // Polling interval every 5 minutes
-      const intervalId = setInterval(fetchAirportInfo, 5 * 60 * 1000) // 300000ms
+      const intervalId = setInterval(fetchAirportInfo, 60 * 1000) // 1 minute
     
       return () => {
         isMounted = false
