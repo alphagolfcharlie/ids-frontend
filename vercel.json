@@ -2,7 +2,7 @@
     "rewrites": [
       {
         "source": "/api/(.*)",
-        "destination": "https://ids-n2ux.onrender.com/api/$1"
+        "destination": "https://api.alphagolfcharlie.dev/api/$1"
       },
       {
         "source": "/(.*)",
