@@ -41,7 +41,7 @@ import {
         </div>
       </div>
         <div className="bg-red-700 text-white text-center py-2">
-        NOTAM: Pilot/controller/ATIS/weather information is not current; work is being done to move the site over to a new host.</div>
+        NOTAM: Pilot/controller/ATIS/weather information currently updating only every 5 minutes. This is a known bug and a fix is in the works.</div>
       </div>
 
     );
