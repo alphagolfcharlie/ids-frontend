@@ -40,8 +40,8 @@ import {
           <ModeToggle />
         </div>
       </div>
-        <div className="bg-indigo-700 text-white text-center py-2">
-        NOTAM: This is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use. Always double-check info with relevant SOPs/LOAs.</div>
+        <div className="bg-red-700 text-white text-center py-2">
+        NOTAM: Pilot/controller/ATIS/weather information is not current; work is being done to move the site over to a new host.</div>
       </div>
 
     );
