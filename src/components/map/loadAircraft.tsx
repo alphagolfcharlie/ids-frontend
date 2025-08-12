@@ -30,8 +30,9 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
         const res = await fetch(`/api/aircraft?radius=${radius}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
-        const data: Aircraft[] = await res.json()
-        aircraftLayerGroup.clearLayers()
+          const json = await res.json()
+          const data: Aircraft[] = json.aircraft || []        
+          aircraftLayerGroup.clearLayers()
 
         data.forEach((aircraft) => {
           if (aircraft.lat && aircraft.lon) {
