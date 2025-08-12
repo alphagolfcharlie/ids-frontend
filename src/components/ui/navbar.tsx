@@ -27,6 +27,9 @@ import {
                 <NavigationMenuLink href="https://clevelandcenter.org/downloads" target="_blank">
                   SOP/LOA
                 </NavigationMenuLink>
+                <NavigationMenuLink href="https://github.com/alphagolfcharlie/ids-frontend" target="_blank">
+                  Github
+                </NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -41,7 +44,7 @@ import {
         </div>
       </div>
         <div className="bg-red-700 text-white text-center py-2">
-        NOTAM: Pilot/controller/ATIS/weather information currently updating only every 5 minutes. This is a known bug and a fix is in the works.</div>
+        NOTAM: Site for VATSIM and not real-world use only. Always double-check info with relevant SOPs/LOAs.</div>
       </div>
 
     );
