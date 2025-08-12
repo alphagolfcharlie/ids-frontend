@@ -44,7 +44,7 @@ import {
         </div>
       </div>
         <div className="bg-red-700 text-white text-center py-2">
-        NOTAM: Site for VATSIM and not real-world use only. Always double-check info with relevant SOPs/LOAs.</div>
+        NOTAM: This site is not an official tool of the virtual Cleveland ARTCC, nor is it for real-world use.</div>
       </div>
 
     );
