@@ -52,6 +52,7 @@ import type {
 } from "@tanstack/react-table"; // Use `import type` for type-only imports
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner"; // ✅ Import Sonner toast
 
 
 export type Crossing = {
@@ -103,7 +104,7 @@ export function CrossingsTable() {
         const token = localStorage.getItem("authToken"); // Retrieve the JWT token
 
         if (!token) {
-            alert("You are not authorized to perform this action.");
+            toast.error("You are not authorized to perform this action.");
             return;
         }
 
@@ -125,9 +126,9 @@ export function CrossingsTable() {
 
             // Remove the deleted crossing from the state
             setCrossings((prevCrossings) => prevCrossings.filter((crossing) => crossing._id !== id));
-            alert("Crossing deleted successfully.");
+            toast.success("Crossing deleted successfully.");
         } catch (err) {
-            alert("Error deleting crossing: " + (err as Error).message);
+            toast.error("Error deleting crossing: " + (err as Error).message);
         }
         };
       // Open the dialog for creating a new entry
@@ -154,7 +155,7 @@ export function CrossingsTable() {
         try {
             const token = localStorage.getItem("authToken");
             if (!token) {
-            alert("You are not authorized to perform this action. Please log in.");
+            toast.error("You are not authorized to perform this action. Please log in.");
             return;
             }
         
@@ -181,14 +182,14 @@ export function CrossingsTable() {
         
             //const updatedCrossing = await response.json();
         
-            alert(`Crossing ${editingCrossing ? "updated" : "created"} successfully!`);
+            toast.success(`Crossing ${editingCrossing ? "updated" : "created"} successfully!`);
             setIsDialogOpen(false); // Close the dialog
         
             // Re-fetch the crossings to refresh the table
             fetchCrossings();
             } catch (err) {
             console.error(`Error ${editingCrossing ? "updating" : "creating"} crossing:`, err);
-            alert(`Failed to ${editingCrossing ? "update" : "create"} crossing. Please try again.`);
+            toast.error(`Failed to ${editingCrossing ? "update" : "create"} crossing. Please try again.`);
             }
         };
     const handleCancelEdit = () => {
@@ -449,7 +450,7 @@ export function CrossingsTable() {
           ) {
             const token = localStorage.getItem("authToken");
             if (!token) {
-              alert("You are not authorized to perform this action.");
+              toast.error("You are not authorized to perform this action.");
               return;
             }
 
@@ -469,11 +470,11 @@ export function CrossingsTable() {
                 );
               }
 
-              alert("Selected crossings deleted.");
+              toast.success("Selected crossings deleted.");
               fetchCrossings(); // Refresh
               table.resetRowSelection(); // Clear selection
             } catch (err) {
-              alert("Error deleting selected crossings.");
+              toast.error("Error deleting selected crossings.");
               console.error(err);
             }
           }

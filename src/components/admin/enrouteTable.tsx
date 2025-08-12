@@ -52,6 +52,7 @@ import type {
 } from "@tanstack/react-table"; // Use `import type` for type-only imports
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner"; // ✅ Import Sonner toast
 
 
 export type Enroute = {
@@ -101,7 +102,7 @@ export function EnrouteTable() {
         const token = localStorage.getItem("authToken"); // Retrieve the JWT token
 
         if (!token) {
-            alert("You are not authorized to perform this action.");
+            toast.error("You are not authorized to perform this action.");
             return;
         }
 
@@ -123,9 +124,9 @@ export function EnrouteTable() {
 
             // Remove the deleted enroute from the state
             setEnroutes((prevEnroutes) => prevEnroutes.filter((enroute) => enroute._id !== id));
-            alert("Enroute deleted successfully.");
+            toast.success("Enroute deleted successfully.");
         } catch (err) {
-            alert("Error deleting enroute: " + (err as Error).message);
+            toast.error("Error deleting enroute: " + (err as Error).message);
         }
         };
 
