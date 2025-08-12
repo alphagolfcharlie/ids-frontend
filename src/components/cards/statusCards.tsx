@@ -27,7 +27,7 @@ export function AirportStatusCards() {
           const res = await fetch("/api/airport_info")
           const json = await res.json()
           if (isMounted) {
-            setAirportData(json)
+            setAirportData(json.airports)
             setError(null)
           }
         } catch (err) {
