@@ -1,20 +1,26 @@
 import { Routes, Route } from "react-router-dom";
-import { AdminPage } from "./pages/admin"; // Your admin page
-import { HomePage } from "./pages/home"; // Your home page with the form
+import { AdminPage } from "./pages/admin";
+import { HomePage } from "./pages/home";
+import { Toaster } from "@/components/ui/sonner"; // ✅ Import Toaster
 
 function App() {
   return (
-    <Routes>
-      {/* Home Page */}
-      <Route path="/" element={<HomePage />} />
+    <>
+      {/* ✅ Toast notifications provider */}
+      <Toaster richColors position="top-right" />
 
-      {/* Routes Page (renders the same HomePage component) */}
-      <Route path="/routes" element={<HomePage />} />
-      <Route path="/:tab" element={<HomePage />} />
+      <Routes>
+        {/* Home Page */}
+        <Route path="/" element={<HomePage />} />
 
-      {/* Admin Page */}
-      <Route path="/admin" element={<AdminPage />} />
-    </Routes>
+        {/* Routes Page */}
+        <Route path="/routes" element={<HomePage />} />
+        <Route path="/:tab" element={<HomePage />} />
+
+        {/* Admin Page */}
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </>
   );
 }
 
