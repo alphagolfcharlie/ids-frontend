@@ -45,7 +45,7 @@ export function HomePage() {
               navigate("/" + val + location.search)
             }}>
               <TabsList>
-                <TabsTrigger value="routing">Clearance Routing</TabsTrigger>
+                <TabsTrigger value="routing">C/D Routing</TabsTrigger>
                 <TabsTrigger value="crossings">External LOAs</TabsTrigger>
                 <TabsTrigger value="internalcrossings">Internal LOAs</TabsTrigger>
               </TabsList>
