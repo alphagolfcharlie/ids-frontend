@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       {/* ✅ Toast notifications provider */}
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position="top-left" />
 
       <Routes>
         {/* Home Page */}
