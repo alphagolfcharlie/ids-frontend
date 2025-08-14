@@ -45,6 +45,9 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
             } else if (isZobArrival) {
               circleColor = "yellow"
             }
+            else if (isZobArrival && isZobDeparture) {
+              circleColor = "pink"
+            }
 
             const circle = L.circle([aircraft.lat, aircraft.lon], {
               pane: "aircraftPane",
