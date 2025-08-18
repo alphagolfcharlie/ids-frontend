@@ -9,16 +9,40 @@ type Aircraft = {
   lat: number
   lon: number
   route: string
+  heading?: number   // add heading if API provides it
 }
 
-const ZOB_AIRPORTS = ["KBUF", "KCLE", "KDTW", "KPIT", "KROC"]
+function makeAircraftIcon(color: string, heading: number = 0) {
+  return L.divIcon({
+    className: "", // no default styles
+    html: `
+      <div style="
+        width: 24px; 
+        height: 24px; 
+        transform: rotate(${heading}deg);
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 423 394" 
+             width="24" 
+             height="24" 
+             fill="${color}">
+        <path d="M 423.027344 285.199219 C 422.554688 272.96875 416.738281 261.542969 407.085938 253.957031 L 363.984375 220.09375 C 366.378906 208.628906 365.636719 196.75 361.839844 185.695312 C 359.921875 180.066406 353.777344 177.054688 348.148438 179.011719 C 345.34375 179.960938 343.054688 182.042969 341.796875 184.746094 C 339.671875 189.46875 338.414062 194.519531 338.0625 199.699219 L 309.273438 177.09375 C 311.6875 165.648438 310.945312 153.769531 307.152344 142.71875 C 305.234375 137.085938 299.085938 134.078125 293.457031 135.996094 C 290.652344 136.984375 288.363281 139.066406 287.125 141.75 C 285.003906 146.472656 283.722656 151.542969 283.371094 156.71875 L 258.789062 137.417969 C 253.097656 132.964844 249.820312 126.097656 249.863281 118.878906 L 250.148438 83.078125 C 250.273438 69.796875 246.953125 56.703125 240.5625 45.027344 L 234.1875 33.417969 C 231.15625 27.914062 224.25 25.910156 218.742188 28.902344 C 216.824219 29.953125 215.277344 31.5 214.226562 33.417969 L 207.851562 45.027344 C 201.480469 56.679688 198.179688 69.796875 198.285156 83.097656 L 198.550781 118.878906 C 198.613281 126.074219 195.335938 132.941406 189.644531 137.398438 L 165.0625 156.742188 C 164.710938 151.566406 163.433594 146.492188 161.289062 141.75 C 158.832031 136.324219 152.441406 133.933594 147.015625 136.386719 C 144.292969 137.625 142.234375 139.890625 141.261719 142.71875 C 137.46875 153.769531 136.726562 165.648438 139.140625 177.09375 L 110.390625 199.699219 C 110.019531 194.542969 108.742188 189.46875 106.617188 184.746094 C 104.164062 179.324219 97.75 176.910156 92.328125 179.363281 C 89.644531 180.601562 87.5625 182.890625 86.574219 185.695312 C 82.777344 196.75 82.054688 208.648438 84.449219 220.074219 L 41.347656 253.976562 C 31.714844 261.542969 25.878906 272.949219 25.425781 285.199219 C 25.261719 289.28125 28.4375 292.746094 32.519531 292.910156 C 33.574219 292.933594 34.625 292.746094 35.59375 292.355469 L 200.738281 224.796875 C 198.925781 258.738281 200.429688 292.789062 205.277344 326.421875 L 164.730469 362.222656 C 154.730469 371.070312 147.882812 382.949219 145.242188 396.023438 C 144.523438 399.507812 146.769531 402.910156 150.277344 403.613281 C 151.535156 403.882812 152.851562 403.757812 154.070312 403.242188 L 214.988281 377.546875 L 215.007812 385.609375 C 215.113281 390.703125 219.382812 394.722656 224.476562 394.582031 C 229.363281 394.4375 233.28125 390.515625 233.445312 385.609375 L 233.445312 377.523438 L 294.34375 403.242188 C 297.644531 404.644531 301.417969 403.097656 302.820312 399.839844 C 303.335938 398.621094 303.460938 397.300781 303.191406 396.003906 C 300.550781 382.929688 293.683594 371.070312 283.703125 362.242188 L 243.179688 326.421875 C 247.984375 292.789062 249.492188 258.738281 247.675781 224.796875 L 412.820312 292.355469 C 416.59375 293.902344 420.90625 292.105469 422.472656 288.3125 C 422.882812 287.324219 423.070312 286.269531 423.027344 285.199219 "/>
+        </svg>
+      </div>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],   // center
+    popupAnchor: [0, -10],
+    tooltipAnchor: [0, -10],
+  })
+}
 
 export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: number }) {
   useEffect(() => {
     if (!map) return
 
     const aircraftLayerGroup = L.layerGroup([], { pane: "aircraftPane" }).addTo(map)
-
+    const ZOB_AIRPORTS = ["KBUF","KCLE","KDTW","KPIT","KROC"]
     if (!map.getPane("aircraftTooltipPane")) {
       map.createPane("aircraftTooltipPane")
       map.getPane("aircraftTooltipPane")!.style.zIndex = "4000"
@@ -30,34 +54,34 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
         const res = await fetch(`/api/aircraft?radius=${radius}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
-          const json = await res.json()
-          const data: Aircraft[] = json.aircraft || []        
-          aircraftLayerGroup.clearLayers()
+        const json = await res.json()
+        const data: Aircraft[] = json.aircraft || []
+        aircraftLayerGroup.clearLayers()
 
         data.forEach((aircraft) => {
+
+
           if (aircraft.lat && aircraft.lon) {
             const isZobDeparture = ZOB_AIRPORTS.includes(aircraft.departure)
             const isZobArrival = ZOB_AIRPORTS.includes(aircraft.destination)
-
-            let circleColor = "blue"
+            // pick a color (customize as you like)
+            let color = "#FF6F00"
             if (isZobDeparture) {
-              circleColor = "red"
+              color = "#00BFFF"
             } else if (isZobArrival) {
-              circleColor = "yellow"
-            }
-            else if (isZobArrival && isZobDeparture) {
-              circleColor = "pink"
+              color = "#FFD700"
+            } else if (isZobArrival && isZobDeparture) {
+              color = "#FF1744"
             }
 
-            const circle = L.circle([aircraft.lat, aircraft.lon], {
+            const icon = makeAircraftIcon(color, aircraft.heading ?? 0)
+
+            const marker = L.marker([aircraft.lat, aircraft.lon], {
+              icon,
               pane: "aircraftPane",
-              color: circleColor,
-              fillColor: "#30f",
-              fillOpacity: 0.5,
-              radius: 300,
             })
 
-            circle
+            marker
               .bindTooltip(
                 `${aircraft.callsign} ${aircraft.departure} ➔ ${aircraft.destination}`,
                 {
@@ -75,7 +99,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
                 </div>
               `)
 
-            circle.addTo(aircraftLayerGroup)
+            marker.addTo(aircraftLayerGroup)
           }
         })
       } catch (error) {
@@ -83,15 +107,15 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
       }
     }
 
-    fetchAircraft() // immediate fetch on mount or radius change
-    const intervalId = setInterval(fetchAircraft, 60 * 1000) // refresh every minute
+    fetchAircraft()
+    const intervalId = setInterval(fetchAircraft, 60 * 1000)
 
     return () => {
       clearInterval(intervalId)
       aircraftLayerGroup.clearLayers()
       map.removeLayer(aircraftLayerGroup)
     }
-  }, [map, radius]) // radius in dependencies
+  }, [map, radius])
 
   return null
 }
