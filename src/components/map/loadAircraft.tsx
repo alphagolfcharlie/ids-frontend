@@ -42,7 +42,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
     if (!map) return
 
     const aircraftLayerGroup = L.layerGroup([], { pane: "aircraftPane" }).addTo(map)
-    const ZOB_AIRPORTS = ["KBUF","KCLE","KDTW","KPIT","KROC"]
+    const ZOB_AIRPORTS = ["KBUF","KCLE","KDTW","KPIT","KROC","KIAG","KERI","KBKL","KCGF","KCAK","KMFD","KPTK","KYIP","KDET","KTOL","KAGC"]
     if (!map.getPane("aircraftTooltipPane")) {
       map.createPane("aircraftTooltipPane")
       map.getPane("aircraftTooltipPane")!.style.zIndex = "4000"
@@ -51,7 +51,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
 
     const fetchAircraft = async () => {
       try {
-        const res = await fetch(`https://ids.alphagolfcharlie.dev/api/aircraft?radius=${radius}`)
+        const res = await fetch(`https://ids.alphagolfcharlie.devhttps://ids.alphagolfcharlie.dev/api/aircraft?radius=${radius}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
         const json = await res.json()

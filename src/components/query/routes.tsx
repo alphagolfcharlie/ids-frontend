@@ -27,7 +27,7 @@ const RoutesForm = () => {
 
     try {
       const response = await fetch(
-        `/api/routes?origin=${routeOrigin}&destination=${routeDestination}`
+        `https://ids.alphagolfcharlie.dev/api/routes?origin=${routeOrigin}&destination=${routeDestination}`
       );
       if (!response.ok) throw new Error("Failed to fetch routes");
       const data = await response.json();

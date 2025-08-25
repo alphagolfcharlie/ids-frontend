@@ -77,7 +77,7 @@ export function RoutesTable() {
 
   const fetchRoute = async () => {
     try {
-      const response = await fetch("/api/routes");
+      const response = await fetch("https://ids.alphagolfcharlie.dev/api/routes");
       if (!response.ok) throw new Error("Failed to fetch routes");
       const data = await response.json();
       setRoutes(data);
@@ -99,7 +99,7 @@ export function RoutesTable() {
     if (!window.confirm("Are you sure you want to delete this route?")) return;
 
     try {
-      const response = await fetch(`/api/routes/${id}`, {
+      const response = await fetch(`https://ids.alphagolfcharlie.dev/api/routes/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -142,8 +142,8 @@ export function RoutesTable() {
       const isEdit =
         editingRoute && editingRoute._id && editingRoute._id.trim() !== "";
       const url = isEdit
-        ? `/api/routes/${editingRoute._id}`
-        : `/api/routes`;
+        ? `https://ids.alphagolfcharlie.dev/api/routes/${editingRoute._id}`
+        : `https://ids.alphagolfcharlie.dev/api/routes`;
       const method = isEdit ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -403,7 +403,7 @@ export function RoutesTable() {
                       try {
                         for (const row of table.getFilteredSelectedRowModel()
                           .rows) {
-                          await fetch(`/api/routes/${row.original._id}`, {
+                          await fetch(`https://ids.alphagolfcharlie.dev/api/routes/${row.original._id}`, {
                             method: "DELETE",
                             headers: { Authorization: `Bearer ${token}` },
                           });

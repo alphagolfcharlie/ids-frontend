@@ -80,7 +80,7 @@ export function EnrouteTable() {
 
     const fetchEnroute = async () => {
         try {
-        const response = await fetch("/api/enroute", {
+        const response = await fetch("https://ids.alphagolfcharlie.dev/api/enroute", {
             method: "GET",
         });
 
@@ -111,7 +111,7 @@ export function EnrouteTable() {
         }
 
         try {
-            const response = await fetch(`/api/enroute/${id}`, {
+            const response = await fetch(`https://ids.alphagolfcharlie.dev/api/enroute/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`, // Include the JWT token in the Authorization header
@@ -159,8 +159,8 @@ export function EnrouteTable() {
         
             const isEdit = editingEnroute && editingEnroute._id && editingEnroute._id.trim() !== "";
             const url = isEdit
-              ? `/api/enroute/${editingEnroute._id}`
-              : `/api/enroute`;
+              ? `https://ids.alphagolfcharlie.dev/api/enroute/${editingEnroute._id}`
+              : `https://ids.alphagolfcharlie.dev/api/enroute`;
             const method = isEdit ? "PUT" : "POST";
     
         
@@ -456,7 +456,7 @@ export function EnrouteTable() {
                 for (const row of selectedRows) {
                   const enrouteId = row.original._id;
                   await fetch(
-                    `/api/enroute/${enrouteId}`,
+                    `https://ids.alphagolfcharlie.dev/api/enroute/${enrouteId}`,
                     {
                       method: "DELETE",
                       headers: {

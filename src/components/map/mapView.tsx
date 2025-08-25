@@ -32,6 +32,7 @@ export function MapView() {
   // Radius states
   const [radius, setRadius] = useState<number>(400) // active live radius (NM)
   const [pendingRadius, setPendingRadius] = useState<number>(radius) // slider draft  // Radius states
+  const [filterGround, setFilterGround] = useState(false);
 
   const [open, setOpen] = useState(false) // Dialog open state
 
@@ -58,7 +59,7 @@ export function MapView() {
     Promise.all([
       fetch("/boundaries.geojson").then(res => res.json()),   // ARTCCs
       fetch("/tracon.geojson").then(res => res.json()),       // TRACONs
-      fetch("/api/controllers").then(res => res.json())
+      fetch("https://ids.alphagolfcharlie.dev/api/controllers").then(res => res.json())
     ])
       .then(([artccGeo, traconGeo, controllerData]: [FeatureCollection, FeatureCollection, any]) => {
         // Determine active ARTCCs and TRACONs
@@ -233,7 +234,9 @@ export function MapView() {
               <DialogDescription className="text-gray-500">Includes TMU tools (coming soon)</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <p className="font-medium">Radius around DJB VOR to display aircraft: {pendingRadius} NM</p>
+              <p className="font-medium">
+                Radius around DJB VOR to display aircraft: {pendingRadius} NM
+              </p>
               <Slider
                 min={400}
                 max={1000}
@@ -241,9 +244,22 @@ export function MapView() {
                 value={[pendingRadius]}
                 onValueChange={(val) => setPendingRadius(val[0])}
               />
+              
+              {/* Filter Ground Aircraft Toggle */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={filterGround ? "default" : "outline"}
+                  onClick={() => setFilterGround((prev) => !prev)}
+                >
+                  {filterGround ? "Hiding Ground Aircraft" : "Show Ground Aircraft"}
+                </Button>
+              </div>
+
               <div className="flex gap-2">
-              <Button onClick={onConfirm}>Confirm Changes</Button>
-              <Button onClick={onDisregard} variant="destructive">Discard Changes</Button>
+                <Button onClick={onConfirm}>Confirm Changes</Button>
+                <Button onClick={onDisregard} variant="destructive">
+                  Discard Changes
+                </Button>
               </div>
             </div>
           </DialogContent>

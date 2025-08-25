@@ -24,7 +24,7 @@ export function AirportStatusCards() {
     
       async function fetchAirportInfo() {
         try {
-          const res = await fetch("/api/airport_info")
+          const res = await fetch("https://ids.alphagolfcharlie.dev/api/airport_info")
           const json = await res.json()
           if (isMounted) {
             setAirportData(json.airports)

@@ -20,7 +20,7 @@ export function CrossingsInput() {
     setCrossings([])
 
     try {
-      const response = await fetch(`/api/crossings?destination=${destinationToFetch}`)
+      const response = await fetch(`https://ids.alphagolfcharlie.dev/api/crossings?destination=${destinationToFetch}`)
       if (!response.ok) throw new Error("Failed to fetch crossings")
       const data = await response.json()
       setCrossings(data)
