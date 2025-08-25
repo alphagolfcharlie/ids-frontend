@@ -51,7 +51,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
 
     const fetchAircraft = async () => {
       try {
-        const res = await fetch(`https://ids.alphagolfcharlie.devhttps://ids.alphagolfcharlie.dev/api/aircraft?radius=${radius}`)
+        const res = await fetch(`https://ids.alphagolfcharlie.dev/api/aircraft?radius=${radius}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
         const json = await res.json()
