@@ -66,13 +66,13 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
             const isZobArrival = ZOB_AIRPORTS.includes(aircraft.destination)
             // pick a color (customize as you like)
             let color = "#FF6F00"
-            if (isZobDeparture) {
-              color = "#00BFFF"
+
+            if (isZobArrival && isZobDeparture) {
+              color = "#FF1744" // both
+            } else if (isZobDeparture) {
+              color = "#00BFFF" // departure    
             } else if (isZobArrival) {
-              color = "#FFD700"
-            } else if (isZobArrival && isZobDeparture) {
-              color = "#FF1744"
-            }
+              color = "#FFD700" // arrival
 
             const icon = makeAircraftIcon(color, aircraft.heading ?? 0)
 
@@ -101,7 +101,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
 
             marker.addTo(aircraftLayerGroup)
           }
-        })
+        }})
       } catch (error) {
         console.error("Error fetching aircraft data:", error)
       }
