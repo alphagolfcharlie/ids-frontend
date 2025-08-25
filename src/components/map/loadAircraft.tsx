@@ -58,7 +58,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
         const data: Aircraft[] = json.aircraft || []
         aircraftLayerGroup.clearLayers()
 
-        data.forEach((aircraft) => {
+        data.forEach((aircraft) =>{
 
 
           if (aircraft.lat && aircraft.lon) {
@@ -73,6 +73,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
               color = "#00BFFF" // departure    
             } else if (isZobArrival) {
               color = "#FFD700" // arrival
+            }
 
             const icon = makeAircraftIcon(color, aircraft.heading ?? 0)
 
@@ -101,7 +102,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
 
             marker.addTo(aircraftLayerGroup)
           }
-        }})
+        })
       } catch (error) {
         console.error("Error fetching aircraft data:", error)
       }
