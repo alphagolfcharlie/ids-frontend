@@ -59,7 +59,7 @@ export function MapView() {
     Promise.all([
       fetch("/boundaries.geojson").then(res => res.json()),   // ARTCCs
       fetch("/tracon.geojson").then(res => res.json()),       // TRACONs
-      fetch("https://ids.alphagolfcharlie.dev/api/controllers").then(res => res.json())
+      fetch("https://api.alphagolfcharlie.dev/ids/controllers").then(res => res.json())
     ])
       .then(([artccGeo, traconGeo, controllerData]: [FeatureCollection, FeatureCollection, any]) => {
         // Determine active ARTCCs and TRACONs

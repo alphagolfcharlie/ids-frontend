@@ -75,7 +75,7 @@ export function LoginDialog() {
   // Handle successful Google login
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
     try {
-      const response = await fetch("https://ids.alphagolfcharlie.dev/api/google-login", {
+      const response = await fetch("https://api.alphagolfcharlie.dev/ids/google-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
