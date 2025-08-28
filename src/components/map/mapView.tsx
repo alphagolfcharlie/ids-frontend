@@ -32,7 +32,7 @@ export function MapView() {
   // Radius states
   const [radius, setRadius] = useState<number>(400) // active live radius (NM)
   const [pendingRadius, setPendingRadius] = useState<number>(radius) // slider draft  // Radius states
-  const [filterGround, setFilterGround] = useState(false);
+  const [filterGround, setFilterGround] = useState(true);
 
   const [open, setOpen] = useState(false) // Dialog open state
 
@@ -251,7 +251,7 @@ export function MapView() {
                   variant={filterGround ? "default" : "outline"}
                   onClick={() => setFilterGround((prev) => !prev)}
                 >
-                  {filterGround ? "Hiding Ground Aircraft" : "Show Ground Aircraft"}
+                  {filterGround ? "Hide aircraft on the ground" : "Show aircraft on the ground"}
                 </Button>
               </div>
 
@@ -297,7 +297,7 @@ export function MapView() {
 
       {mapReady && mapRef.current && (
         <>
-          {showTraffic && <LoadAircraft map={mapRef.current} radius={radius} />}
+          {showTraffic && <LoadAircraft map={mapRef.current} radius={radius} filterGround={filterGround} />}
           <div className="mt-6">
             <ShowRoutes map={mapRef.current} />
           </div>

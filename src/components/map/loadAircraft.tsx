@@ -37,7 +37,7 @@ function makeAircraftIcon(color: string, heading: number = 0) {
   })
 }
 
-export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: number }) {
+export function LoadAircraft({ map, radius, filterGround}: { map: L.Map | null; radius: number; filterGround: boolean }) {
   useEffect(() => {
     if (!map) return
 
@@ -51,7 +51,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
 
     const fetchAircraft = async () => {
       try {
-        const res = await fetch(`https://api.alphagolfcharlie.dev/ids/aircraft?radius=${radius}`)
+        const res = await fetch(`https://api.alphagolfcharlie.dev/ids/aircraft?radius=${radius}&ground=${filterGround}`)
         if (!res.ok) throw new Error("Failed to fetch aircraft data")
 
         const json = await res.json()
@@ -116,7 +116,7 @@ export function LoadAircraft({ map, radius }: { map: L.Map | null; radius: numbe
       aircraftLayerGroup.clearLayers()
       map.removeLayer(aircraftLayerGroup)
     }
-  }, [map, radius])
+  }, [map, radius, filterGround])
 
   return null
 }
