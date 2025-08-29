@@ -54,7 +54,7 @@ export function CrossingsInput() {
   };
 
   return (
-    <div className="w-full max-w-sm space-y-4">
+    <div className="w-full space-y-4">
       <form onSubmit={handleSubmit}>
         <Label htmlFor="destination">Destination</Label>
         <Input

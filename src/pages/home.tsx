@@ -16,12 +16,14 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 
+import { WaypointsDisplay } from "@/components/query/waypoints.tsx";
+
 export function HomePage() {
   const { tab } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const validTabs = ["routing", "crossings", "internalcrossings"]
+  const validTabs = ["routing", "crossings", "internalcrossings", "info", "waypoints"]
   const activeTab = validTabs.includes(tab || "") ? tab! : "routing"
 
   const [currentTab, setCurrentTab] = useState(activeTab)
@@ -39,15 +41,17 @@ export function HomePage() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <div className="flex flex-col md:flex-row flex-1">
-          <div className="w-full md:w-1/4 p-4 md:p-6 border-r overflow-y-auto space-y-10">
+          <div className="w-full md:w-1/2 p-4 md:p-6 border-r overflow-y-auto space-y-10">
             <Tabs value={currentTab} onValueChange={(val) => {
               setCurrentTab(val)
               navigate("/" + val + location.search)
             }}>
-              <TabsList>
+              <TabsList className="w-full">
                 <TabsTrigger value="routing">C/D Routing</TabsTrigger>
                 <TabsTrigger value="crossings">External LOAs</TabsTrigger>
                 <TabsTrigger value="internalcrossings">Internal LOAs</TabsTrigger>
+                <TabsTrigger value="info">Airport Info</TabsTrigger>
+                <TabsTrigger value="waypoints">ROTG/Headings</TabsTrigger>
               </TabsList>
               <br />
               <TabsContent value="routing">
@@ -59,6 +63,12 @@ export function HomePage() {
               <TabsContent value="internalcrossings">
                 <EnrouteInput />
               </TabsContent>
+              <TabsContent value="info">
+                <AirportStatusCards />
+              </TabsContent>
+              <TabsContent value="waypoints">
+                <WaypointsDisplay />
+              </TabsContent>
             </Tabs>
           </div>
 
@@ -68,9 +78,7 @@ export function HomePage() {
             </AspectRatio>
           </div>
 
-          <div className="w-full md:w-1/4 border-r px-4 py-6 flex flex-col h-auto md:h-[calc(100vh-64px)] overflow-auto">
-            <AirportStatusCards />
-          </div>
+
         </div>
 
 
