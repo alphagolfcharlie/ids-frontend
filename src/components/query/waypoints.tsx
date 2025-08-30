@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import waypoints from "./waypoints.json";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 interface AirportInfo {
     airports: {
@@ -26,13 +27,13 @@ export function WaypointsDisplay() {
 
     // --- DTW ROTG runways ---
     const allRunways: (keyof typeof waypoints.dtwrotg[0]["rotg"])[] = [
-        "21R/L","22L","22R","03L","03R","04R","04L"
+        "21R/L", "22L", "22R", "03L", "03R", "04R", "04L"
     ];
 
     const dtwExclude = dtwFlow === "NORTH"
-        ? ["21R/L","22L","22R"]
+        ? ["21R/L", "22L", "22R"]
         : dtwFlow === "SOUTH"
-            ? ["03L","03R","04L","04R"]
+            ? ["03L", "03R", "04L", "04R"]
             : [];
 
     // --- PIT runways filter ---
@@ -44,112 +45,122 @@ export function WaypointsDisplay() {
     }
 
     return (
-        <div className="space-y-8 p-4">
+        <div className="p-4">
+            <Accordion type="multiple" className="w-full space-y-4">
 
-            {/* Table 1: DTW ROTG */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>DTW ROTG / SIDs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>SID</TableHead>
-                                <TableHead>Gate</TableHead>
-                                {allRunways
-                                    .filter(rwy => !dtwExclude.includes(rwy))
-                                    .map(rwy => <TableHead key={rwy}>{rwy}</TableHead>)
-                                }
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {waypoints.dtwrotg.map((sid) => (
-                                <TableRow key={sid.sid}>
-                                    <TableCell><span className="font-bold">{sid.sid}</span></TableCell>
-                                    <TableCell>{sid.gate}</TableCell>
-                                    {allRunways
-                                        .filter(rwy => !dtwExclude.includes(rwy))
-                                        .map(rwy => (
-                                            <TableCell
-                                                key={rwy}
-                                                className={sid.prefRwys.includes(rwy) ? "text-green-600" : "text-gray-400"}
-                                            >
-                                                {sid.rotg[rwy]}
-                                            </TableCell>
-                                        ))
-                                    }
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-
-            {/* Table 2: PIT Headings */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>PIT / Headings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Runway</TableHead>
-                                <TableHead>Initial fix</TableHead>
-                                <TableHead>Heading</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {waypoints.pithdg
-                                .filter((rw) => pitAllowed.includes(rw.runway))
-                                .map((rw) =>
-                                    Object.entries(rw.headings).map(([sector, heading]) => (
-                                        <TableRow key={`${rw.runway}-${sector}`}>
-                                            <TableCell>{rw.runway}</TableCell>
-                                            <TableCell>{sector}</TableCell>
-                                            <TableCell>{heading}</TableCell>
+                {/* DTW ROTG */}
+                <AccordionItem value="dtw-rotg">
+                    <AccordionTrigger className="text-lg font-bold">DTW ROTG fixes / SID gates</AccordionTrigger>
+                    <AccordionContent>
+                        <Card>
+                            <CardContent className="pt-4">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>SID</TableHead>
+                                            <TableHead>Gate</TableHead>
+                                            {allRunways
+                                                .filter(rwy => !dtwExclude.includes(rwy))
+                                                .map(rwy => <TableHead key={rwy}>{rwy}</TableHead>)
+                                            }
                                         </TableRow>
-                                    ))
-                                )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {waypoints.dtwrotg.map((sid) => (
+                                            <TableRow key={sid.sid}>
+                                                <TableCell><span className="font-bold">{sid.sid}</span></TableCell>
+                                                <TableCell>{sid.gate}</TableCell>
+                                                {allRunways
+                                                    .filter(rwy => !dtwExclude.includes(rwy))
+                                                    .map(rwy => (
+                                                        <TableCell
+                                                            key={rwy}
+                                                            className={sid.prefRwys.includes(rwy) ? "text-green-600" : "text-gray-400"}
+                                                        >
+                                                            {sid.rotg[rwy]}
+                                                        </TableCell>
+                                                    ))
+                                                }
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </AccordionContent>
+                </AccordionItem>
 
-            {/* Table 3: DTW Metro Headings */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>DTW Metro / Headings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Metro SID</TableHead>
-                                {Object.keys(waypoints.metrosid[0].headings)
-                                    .filter((key) => key !== "Gate")
-                                    .map((gate) => <TableHead key={gate}>{gate}</TableHead>)
-                                }
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {waypoints.metrosid.map((metro) => (
-                                <TableRow key={metro.name}>
-                                    <TableCell>{metro.name}</TableCell>
-                                    {Object.entries(metro.headings)
-                                        .filter(([key]) => key !== "Gate")
-                                        .map(([k, heading]) => (
-                                            <TableCell key={k}>{heading || "-"}</TableCell>
-                                        ))
-                                    }
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                {/* PIT Headings */}
+                <AccordionItem value="pit-headings">
+                    <AccordionTrigger className="text-lg font-bold">PIT Headings</AccordionTrigger>
+                    <AccordionContent>
+                        <Card>
+                            <CardContent className="pt-4">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Runway</TableHead>
+                                            <TableHead>Sector</TableHead>
+                                            <TableHead>Heading</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {waypoints.pithdg
+                                            .filter((rw) => pitAllowed.includes(rw.runway))
+                                            .map((rw) =>
+                                                Object.entries(rw.headings).map(([sector, heading]) => (
+                                                    <TableRow key={`${rw.runway}-${sector}`}>
+                                                        <TableCell>{rw.runway}</TableCell>
+                                                        <TableCell>{sector}</TableCell>
+                                                        <TableCell>{heading}</TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </AccordionContent>
+                </AccordionItem>
 
+                {/* DTW Metro */}
+                <AccordionItem value="dtw-metro">
+                    <AccordionTrigger className="text-lg font-bold">DTW Metro SID Headings</AccordionTrigger>
+                    <AccordionContent>
+                        <Card>
+                            <CardContent className="pt-4">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Metro SID</TableHead>
+                                            {Object.keys(waypoints.metrosid[0].headings)
+                                                .filter((key) => key !== "Gate")
+                                                .map((gate) => <TableHead key={gate}>{gate}</TableHead>)
+                                            }
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {waypoints.metrosid.map((metro) => (
+                                            <TableRow key={metro.name}>
+                                                <TableCell>{metro.name}</TableCell>
+                                                {Object.entries(metro.headings)
+                                                    .filter(([key]) => key !== "Gate")
+                                                    .map(([k, heading]) => (
+                                                        <TableCell key={k}>{heading || "-"}</TableCell>
+                                                    ))
+                                                }
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </AccordionContent>
+                </AccordionItem>
+
+
+
+            </Accordion>
         </div>
     );
 }
