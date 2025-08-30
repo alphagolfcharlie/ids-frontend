@@ -5,35 +5,43 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 
 interface AirportInfo {
     airports: {
-        KDTW: {
-            flow: "NORTH" | "SOUTH" | null;
-        };
+        KDTW: { flow: "NORTH" | "SOUTH" | null };
+        KPIT: { flow: "EAST" | "WEST" | null };
     };
 }
 
 export function WaypointsDisplay() {
     const [dtwFlow, setDtwFlow] = useState<"NORTH" | "SOUTH" | null>(null);
+    const [pitFlow, setPitFlow] = useState<"EAST" | "WEST" | null>(null);
 
-    // Fetch DTW flow on mount
     useEffect(() => {
         fetch("https://api.alphagolfcharlie.dev/ids/airport_info")
             .then((res) => res.json())
             .then((data: AirportInfo) => {
                 setDtwFlow(data.airports.KDTW.flow);
+                setPitFlow(data.airports.KPIT.flow);
             })
             .catch((err) => console.error("Failed to fetch airport info:", err));
     }, []);
 
+    // --- DTW ROTG runways ---
     const allRunways: (keyof typeof waypoints.dtwrotg[0]["rotg"])[] = [
-        "21R/L","22L","22R","03L","04R","03R","04L"
+        "21R/L","22L","22R","03L","03R","04R","04L"
     ];
 
-    // Exclude runways based on flow
-    const excludeRunways = dtwFlow === "NORTH"
+    const dtwExclude = dtwFlow === "NORTH"
         ? ["21R/L","22L","22R"]
         : dtwFlow === "SOUTH"
-            ? ["03L","04R","03R","04L"]
+            ? ["03L","03R","04L","04R"]
             : [];
+
+    // --- PIT runways filter ---
+    const pitAllowed = ["Only one RWY in Use"]; // always include
+    if (pitFlow === "EAST") {
+        pitAllowed.push("10L", "10C", "10R");
+    } else if (pitFlow === "WEST") {
+        pitAllowed.push("28L", "28C", "28R");
+    }
 
     return (
         <div className="space-y-8 p-4">
@@ -50,7 +58,7 @@ export function WaypointsDisplay() {
                                 <TableHead>SID</TableHead>
                                 <TableHead>Gate</TableHead>
                                 {allRunways
-                                    .filter(rwy => !excludeRunways.includes(rwy))
+                                    .filter(rwy => !dtwExclude.includes(rwy))
                                     .map(rwy => <TableHead key={rwy}>{rwy}</TableHead>)
                                 }
                             </TableRow>
@@ -61,7 +69,7 @@ export function WaypointsDisplay() {
                                     <TableCell><span className="font-bold">{sid.sid}</span></TableCell>
                                     <TableCell>{sid.gate}</TableCell>
                                     {allRunways
-                                        .filter(rwy => !excludeRunways.includes(rwy))
+                                        .filter(rwy => !dtwExclude.includes(rwy))
                                         .map(rwy => (
                                             <TableCell
                                                 key={rwy}
@@ -78,7 +86,38 @@ export function WaypointsDisplay() {
                 </CardContent>
             </Card>
 
-            {/* Table 2: DTW Metro Headings */}
+            {/* Table 2: PIT Headings */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>PIT / Headings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Runway</TableHead>
+                                <TableHead>Initial fix</TableHead>
+                                <TableHead>Heading</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {waypoints.pithdg
+                                .filter((rw) => pitAllowed.includes(rw.runway))
+                                .map((rw) =>
+                                    Object.entries(rw.headings).map(([sector, heading]) => (
+                                        <TableRow key={`${rw.runway}-${sector}`}>
+                                            <TableCell>{rw.runway}</TableCell>
+                                            <TableCell>{sector}</TableCell>
+                                            <TableCell>{heading}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+            {/* Table 3: DTW Metro Headings */}
             <Card>
                 <CardHeader>
                     <CardTitle>DTW Metro / Headings</CardTitle>
@@ -100,8 +139,8 @@ export function WaypointsDisplay() {
                                     <TableCell>{metro.name}</TableCell>
                                     {Object.entries(metro.headings)
                                         .filter(([key]) => key !== "Gate")
-                                        .map(([_, heading]) => (
-                                            <TableCell key={_}>{heading || "-"}</TableCell>
+                                        .map(([k, heading]) => (
+                                            <TableCell key={k}>{heading || "-"}</TableCell>
                                         ))
                                     }
                                 </TableRow>
@@ -110,6 +149,7 @@ export function WaypointsDisplay() {
                     </Table>
                 </CardContent>
             </Card>
+
         </div>
     );
 }

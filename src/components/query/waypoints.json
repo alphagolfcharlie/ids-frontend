@@ -237,12 +237,51 @@
     }
   ],
   "pithdg": [
-      {
-        "runway": "28R",
-        "headings": {
-          "JST, EWC, TYROO": "315-360°",
-          "BSV, South of JST": "300° (RWY if 28C closed)"
-        }
+    {
+      "runway": "Only one RWY in Use",
+      "headings": {
+        "Any": "190-360°"
       }
-    ]
+    },
+    {
+      "runway": "28R",
+      "headings": {
+        "JST, EWC, TYROO": "315-360°",
+        "BSV, South of JST": "300° (RWY when 28C CLSD)"
+      }
+    },
+    {
+      "runway": "28C",
+      "headings": {
+        "Any": "RWY HDG"
+      }
+    },
+    {
+      "runway": "28L",
+      "headings": {
+        "BSV, JST, EWC, TYROO": "260°",
+        "South of JST": "190-245°"
+      }
+    },
+    {
+      "runway": "10L",
+      "headings": {
+        "BSV, JST, EWC, TYROO": "360-065°",
+        "South of JST": "080°"
+      }
+    },
+    {
+      "runway": "10C",
+      "headings": {
+        "Any": "RWY"
+      }
+    },
+    {
+      "runway": "10R",
+      "headings": {
+        "JST, EWC, TYROO": "120°",
+        "BSV, South of JST": "135-190°"
+      }
+    }
+  ]
 }
