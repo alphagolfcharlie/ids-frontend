@@ -3,7 +3,7 @@
     {
       "sid": "HHOWE#",
       "gate": "MALTB",
-      "prefRwys": ["03L", "21R"],
+      "prefRwys": ["03L", "21R/L"],
       "rotg": {
         "21R/L": "WINRS",
         "22L": "WINRS",
@@ -17,7 +17,7 @@
     {
       "sid": "PAVYL#",
       "gate": "SLVVA",
-      "prefRwys": ["03L", "21R"],
+      "prefRwys": ["03L", "21R/L"],
       "rotg": {
         "21R/L": "JOELU",
         "22L": "JOELU",
@@ -31,7 +31,7 @@
     {
       "sid": "LIDDS#",
       "gate": "KZLOV",
-      "prefRwys": ["03L", "21R"],
+      "prefRwys": ["03L", "21R/L"],
       "rotg": {
         "21R/L": "JOELU",
         "22L": "JOELU",
@@ -45,7 +45,7 @@
     {
       "sid": "KZLOV#",
       "gate": "KZLOV",
-      "prefRwys": ["03L", "21R"],
+      "prefRwys": ["03L", "21R/L"],
       "rotg": {
         "21R/L": "JOELU",
         "22L": "JOELU",
@@ -59,7 +59,7 @@
     {
       "sid": "CLVIN#",
       "gate": "PHAUL",
-      "prefRwys": ["03L", "21R", "04R", "22L"],
+      "prefRwys": ["03L", "21R/L", "04R", "22L"],
       "rotg": {
         "21R/L": "SERGY",
         "22L": "BOOSE",
@@ -73,7 +73,7 @@
     {
       "sid": "BARII#",
       "gate": "HUUTZ",
-      "prefRwys": ["03L", "21R", "04R", "22L"],
+      "prefRwys": ["03L", "21R/L", "04R", "22L"],
       "rotg": {
         "21R/L": "SERGY",
         "22L": "BOOSE",
@@ -87,7 +87,7 @@
     {
       "sid": "SNDRS#",
       "gate": "JWELS",
-      "prefRwys": ["03L", "21R", "04R", "22L"],
+      "prefRwys": ["03L", "21R/L", "04R", "22L"],
       "rotg": {
         "21R/L": "SERGY",
         "22L": "BOOSE",
